@@ -55,7 +55,7 @@
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">0</token>
-				<float name="FieldOfView">70</float>
+				<float name="FieldOfView">45</float>
 				<CoordinateFrame name="Focus">
 					<X>0</X>
 					<Y>0</Y>
