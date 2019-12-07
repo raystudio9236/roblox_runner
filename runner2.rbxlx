@@ -40,26 +40,26 @@
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<CoordinateFrame name="CFrame">
-					<X>0</X>
-					<Y>20</Y>
-					<Z>20</Z>
-					<R00>1</R00>
-					<R01>0</R01>
-					<R02>-0</R02>
+					<X>-196.206131</X>
+					<Y>42.4274406</Y>
+					<Z>40.4577713</Z>
+					<R00>0.201459214</R00>
+					<R01>0.0410676189</R01>
+					<R02>-0.978635609</R02>
 					<R10>-0</R10>
-					<R11>0.780868828</R11>
-					<R12>0.624695063</R12>
-					<R20>0</R20>
-					<R21>-0.624695063</R21>
-					<R22>0.780868828</R22>
+					<R11>0.999120653</R11>
+					<R12>0.0419272594</R12>
+					<R20>0.979496896</R20>
+					<R21>-0.00844663288</R21>
+					<R22>0.201282069</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">0</token>
 				<float name="FieldOfView">45</float>
 				<CoordinateFrame name="Focus">
-					<X>0</X>
-					<Y>0</Y>
-					<Z>-5</Z>
+					<X>0.5</X>
+					<Y>34.0000458</Y>
+					<Z>0</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -74,82 +74,6 @@
 				<float name="HeadScale">1</float>
 				<string name="Name">Camera</string>
 				<BinaryString name="Tags"></BinaryString>
-			</Properties>
-		</Item>
-		<Item class="Part" referent="13">
-			<Properties>
-				<bool name="Anchored">true</bool>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<float name="BackParamA">-0.5</float>
-				<float name="BackParamB">0.5</float>
-				<token name="BackSurface">0</token>
-				<token name="BackSurfaceInput">0</token>
-				<float name="BottomParamA">-0.5</float>
-				<float name="BottomParamB">0.5</float>
-				<token name="BottomSurface">4</token>
-				<token name="BottomSurfaceInput">0</token>
-				<CoordinateFrame name="CFrame">
-					<X>0</X>
-					<Y>-10</Y>
-					<Z>0</Z>
-					<R00>1</R00>
-					<R01>0</R01>
-					<R02>0</R02>
-					<R10>0</R10>
-					<R11>1</R11>
-					<R12>0</R12>
-					<R20>0</R20>
-					<R21>0</R21>
-					<R22>1</R22>
-				</CoordinateFrame>
-				<bool name="CanCollide">true</bool>
-				<bool name="CastShadow">true</bool>
-				<int name="CollisionGroupId">0</int>
-				<Color3uint8 name="Color3uint8">4284636770</Color3uint8>
-				<PhysicalProperties name="CustomPhysicalProperties">
-					<CustomPhysics>false</CustomPhysics>
-				</PhysicalProperties>
-				<float name="FrontParamA">-0.5</float>
-				<float name="FrontParamB">0.5</float>
-				<token name="FrontSurface">0</token>
-				<token name="FrontSurfaceInput">0</token>
-				<float name="LeftParamA">-0.5</float>
-				<float name="LeftParamB">0.5</float>
-				<token name="LeftSurface">0</token>
-				<token name="LeftSurfaceInput">0</token>
-				<bool name="Locked">true</bool>
-				<bool name="Massless">false</bool>
-				<token name="Material">256</token>
-				<string name="Name">Baseplate</string>
-				<float name="Reflectance">0</float>
-				<float name="RightParamA">-0.5</float>
-				<float name="RightParamB">0.5</float>
-				<token name="RightSurface">0</token>
-				<token name="RightSurfaceInput">0</token>
-				<int name="RootPriority">0</int>
-				<Vector3 name="RotVelocity">
-					<X>0</X>
-					<Y>0</Y>
-					<Z>0</Z>
-				</Vector3>
-				<BinaryString name="Tags"></BinaryString>
-				<float name="TopParamA">-0.5</float>
-				<float name="TopParamB">0.5</float>
-				<token name="TopSurface">3</token>
-				<token name="TopSurfaceInput">0</token>
-				<float name="Transparency">0</float>
-				<Vector3 name="Velocity">
-					<X>0</X>
-					<Y>0</Y>
-					<Z>0</Z>
-				</Vector3>
-				<token name="formFactorRaw">1</token>
-				<token name="shape">1</token>
-				<Vector3 name="size">
-					<X>512</X>
-					<Y>20</Y>
-					<Z>512</Z>
-				</Vector3>
 			</Properties>
 		</Item>
 		<Item class="Terrain" referent="RBX39A0DDCCC06541F19E385AEC7D3D6408">
@@ -381,10 +305,18 @@ repeat
 until player.Character
 
 local controlsEnabled = false
+local needJump = false
+local needLeft = false
+local needRight = false
+
+local moveDir = Vector3.new(0, 0, -1)
+local leftDir = Vector3.new(-1, 0, -1)
+local rightDir = Vector3.new(1, 0, -1)
 
 game.ReplicatedStorage.Events.EnableControls.OnClientEvent:connect(function(enabled)
 	controlsEnabled = enabled
 end)
+
 
 game:GetService('RunService'):BindToRenderStep(
     'Controls',
@@ -392,15 +324,79 @@ game:GetService('RunService'):BindToRenderStep(
     function()
         if controlsEnabled then
             if player.Character and player.Character:FindFirstChild('Humanoid') then
-                local moveDir = Vector3.new(0, 0, -1)
-                player.Character.Humanoid:Move(moveDir, false)
+                if needLeft then
+                    player.Character.Humanoid:Move(leftDir, false)
+                elseif needRight then
+                    player.Character.Humanoid:Move(rightDir, false)
+                else
+                    player.Character.Humanoid:Move(moveDir, false)
+                end
+
+                if needJump then
+                    player.Character.Humanoid.Jump = true
+                    needJump = false
+                end
             end
         end
     end)
 
 print('Player Start Running')
 
-game.ReplicatedStorage.Events.StartRunning:FireServer(player)]]></ProtectedString>
+game.ReplicatedStorage.Events.StartRunning:FireServer(player)
+
+local ContextActionService = game:GetService("ContextActionService")
+-- Jump Key
+ContextActionService:BindAction('Jump',
+    function(actionName, inputState, inputObject)
+        needJump = true;
+    end, false, 'w', Enum.KeyCode.Space)
+
+-- Left Key
+ContextActionService:BindAction('Left',
+    function(actionName, inputState, inputObject)
+        if inputState == Enum.UserInputState.End then
+            needLeft = false
+        else
+            needLeft = true
+            needRight = false
+        end
+    end, false, 'a')
+
+-- right Key
+ContextActionService:BindAction('Right',
+    function(actionName, inputState, inputObject)
+        if inputState == Enum.UserInputState.End then
+            needRight = false
+        else
+            needRight = true
+            needLeft = false
+        end
+    end, false, 'd')]]></ProtectedString>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="LocalScript" referent="RBX5C8E7A2706E34803BF1180467C76FB95">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="Disabled">false</bool>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">Player</string>
+					<string name="ScriptGuid">{3BBCD684-11EB-4864-8150-85C3F19B7727}</string>
+					<ProtectedString name="Source"><![CDATA[local player = game.Players.LocalPlayer
+repeat
+    wait()
+until player.Character
+
+local humanoid = player.Character.Humanoid
+
+local touching
+
+humanoid.Touched:connect(function(other)
+    if other.Name == 'GenPoint' and touching ~= other then
+        touching = other
+        game.ReplicatedStorage.Events.GenRoad:FireServer()
+    end
+end)]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
@@ -558,13 +554,26 @@ game.ReplicatedStorage.Events.StartRunning:FireServer(player)]]></ProtectedStrin
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Script</string>
 					<string name="ScriptGuid">{5E2D4FFA-68DD-4AAB-9380-15CB7DDF50FB}</string>
-					<ProtectedString name="Source"><![CDATA[local PlayerManager = require(game.ReplicatedStorage.Source.PlayerManager)
+					<ProtectedString name="Source"><![CDATA[math.randomseed(os.time())
 
-game.ReplicatedStorage.Events.StartRunning.OnServerEvent:connect(function(player)
-    print('On Start Running')
-    PlayerManager:Run(player)
-end)
-]]></ProtectedString>
+local PlayerManager = require(game.ReplicatedStorage.Source.PlayerManager)
+local RoadManager = require(game.ReplicatedStorage.Source.RoadManager)
+
+RoadManager:GenRoad()
+RoadManager:GenRoad()
+
+game.ReplicatedStorage.Events.StartRunning.OnServerEvent:connect(
+    function(player)
+        print('On Start Running')
+        wait(3)
+
+        PlayerManager:Run(player)
+    end)
+
+game.ReplicatedStorage.Events.GenRoad.OnServerEvent:connect(
+    function()
+        RoadManager:GenRoad()
+    end)]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
@@ -608,6 +617,51 @@ return PlayerManager]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
+			<Item class="ModuleScript" referent="RBXDE682DC195CF4A29849766EEFB7D4465">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">RoadManager</string>
+					<string name="ScriptGuid">{063FC810-A0D3-49DC-91E5-55F0EF91F807}</string>
+					<ProtectedString name="Source"><![CDATA[local RoadManager = {}
+
+RoadManager.objects = {
+    Road1 = game.ReplicatedStorage.Objects.Road1,
+    Road2 = game.ReplicatedStorage.Objects.Road2
+}
+
+RoadManager.roadIdx = 0
+RoadManager.roads = {}
+
+local ROAD_OFFSET = -512
+
+function RoadManager:GenRoad()
+    print('GenRoad')
+
+    local obj
+    if self.roadIdx == 0 then
+        obj = self.objects.Road1
+    else
+        obj = self.objects.Road2
+    end
+
+    local newRoad = obj:Clone()
+    newRoad.Parent = workspace
+    newRoad.Model:SetPrimaryPartCFrame(CFrame.new(0, 0, self.roadIdx * ROAD_OFFSET))
+    local r = math.random(0, 256)
+    local g = math.random(0, 256)
+    local b = math.random(0, 256)
+    print(r, g, b)
+    newRoad.Model.Root.Color = Color3.new(r, g, b)
+    table.insert(self.roads, newRoad)
+
+    self.roadIdx = self.roadIdx + 1
+end
+
+return RoadManager]]></ProtectedString>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
 		</Item>
 		<Item class="Folder" referent="RBX2351C0DA2DD44816B2D84D56AA32CE27">
 			<Properties>
@@ -628,6 +682,635 @@ return PlayerManager]]></ProtectedString>
 					<string name="Name">StartRunning</string>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
+			</Item>
+			<Item class="RemoteEvent" referent="RBX0EB2F448FD1641B8A4B7EA1BE5C66BEC">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<string name="Name">GenRoad</string>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="Folder" referent="RBX3F5E357B304F47C6A6D0ADC0263C5385">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Objects</string>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="Tool" referent="RBX147DC53A3D414EDB947AF75A5F21BB4F">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="CanBeDropped">true</bool>
+					<bool name="Enabled">true</bool>
+					<CoordinateFrame name="Grip">
+						<X>0</X>
+						<Y>0</Y>
+						<Z>0</Z>
+						<R00>1</R00>
+						<R01>0</R01>
+						<R02>0</R02>
+						<R10>0</R10>
+						<R11>1</R11>
+						<R12>0</R12>
+						<R20>0</R20>
+						<R21>0</R21>
+						<R22>1</R22>
+					</CoordinateFrame>
+					<bool name="ManualActivationOnly">false</bool>
+					<string name="Name">Road1</string>
+					<bool name="RequiresHandle">true</bool>
+					<BinaryString name="Tags"></BinaryString>
+					<Content name="TextureId"><null></null></Content>
+					<string name="ToolTip"></string>
+				</Properties>
+				<Item class="Model" referent="RBX8E3F7DF8F54543EC8D189B9B189A6AAC">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<CoordinateFrame name="ModelInPrimary">
+							<X>0</X>
+							<Y>0</Y>
+							<Z>0</Z>
+							<R00>1</R00>
+							<R01>0</R01>
+							<R02>0</R02>
+							<R10>0</R10>
+							<R11>1</R11>
+							<R12>0</R12>
+							<R20>0</R20>
+							<R21>0</R21>
+							<R22>1</R22>
+						</CoordinateFrame>
+						<string name="Name">Model</string>
+						<Ref name="PrimaryPart">13</Ref>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+					<Item class="Part" referent="13">
+						<Properties>
+							<bool name="Anchored">true</bool>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<float name="BackParamA">-0.5</float>
+							<float name="BackParamB">0.5</float>
+							<token name="BackSurface">0</token>
+							<token name="BackSurfaceInput">0</token>
+							<float name="BottomParamA">-0.5</float>
+							<float name="BottomParamB">0.5</float>
+							<token name="BottomSurface">4</token>
+							<token name="BottomSurfaceInput">0</token>
+							<CoordinateFrame name="CFrame">
+								<X>-7.5</X>
+								<Y>-10</Y>
+								<Z>0</Z>
+								<R00>1</R00>
+								<R01>0</R01>
+								<R02>0</R02>
+								<R10>0</R10>
+								<R11>1</R11>
+								<R12>0</R12>
+								<R20>0</R20>
+								<R21>0</R21>
+								<R22>1</R22>
+							</CoordinateFrame>
+							<bool name="CanCollide">true</bool>
+							<bool name="CastShadow">true</bool>
+							<int name="CollisionGroupId">0</int>
+							<Color3uint8 name="Color3uint8">4284636770</Color3uint8>
+							<PhysicalProperties name="CustomPhysicalProperties">
+								<CustomPhysics>false</CustomPhysics>
+							</PhysicalProperties>
+							<float name="FrontParamA">-0.5</float>
+							<float name="FrontParamB">0.5</float>
+							<token name="FrontSurface">0</token>
+							<token name="FrontSurfaceInput">0</token>
+							<float name="LeftParamA">-0.5</float>
+							<float name="LeftParamB">0.5</float>
+							<token name="LeftSurface">0</token>
+							<token name="LeftSurfaceInput">0</token>
+							<bool name="Locked">true</bool>
+							<bool name="Massless">false</bool>
+							<token name="Material">256</token>
+							<string name="Name">Root</string>
+							<float name="Reflectance">0</float>
+							<float name="RightParamA">-0.5</float>
+							<float name="RightParamB">0.5</float>
+							<token name="RightSurface">0</token>
+							<token name="RightSurfaceInput">0</token>
+							<int name="RootPriority">0</int>
+							<Vector3 name="RotVelocity">
+								<X>0</X>
+								<Y>0</Y>
+								<Z>0</Z>
+							</Vector3>
+							<BinaryString name="Tags"></BinaryString>
+							<float name="TopParamA">-0.5</float>
+							<float name="TopParamB">0.5</float>
+							<token name="TopSurface">3</token>
+							<token name="TopSurfaceInput">0</token>
+							<float name="Transparency">0</float>
+							<Vector3 name="Velocity">
+								<X>0</X>
+								<Y>0</Y>
+								<Z>0</Z>
+							</Vector3>
+							<token name="formFactorRaw">1</token>
+							<token name="shape">1</token>
+							<Vector3 name="size">
+								<X>49</X>
+								<Y>20</Y>
+								<Z>512</Z>
+							</Vector3>
+						</Properties>
+						<Item class="SpawnLocation" referent="RBXFB91CE04024A4CE6BDC95F151089AEE0">
+							<Properties>
+								<bool name="AllowTeamChangeOnTouch">false</bool>
+								<bool name="Anchored">true</bool>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<float name="BackParamA">-0.5</float>
+								<float name="BackParamB">0.5</float>
+								<token name="BackSurface">0</token>
+								<token name="BackSurfaceInput">0</token>
+								<float name="BottomParamA">-0.5</float>
+								<float name="BottomParamB">0.5</float>
+								<token name="BottomSurface">0</token>
+								<token name="BottomSurfaceInput">0</token>
+								<CoordinateFrame name="CFrame">
+									<X>-7</X>
+									<Y>0.5</Y>
+									<Z>250</Z>
+									<R00>1</R00>
+									<R01>0</R01>
+									<R02>0</R02>
+									<R10>0</R10>
+									<R11>1</R11>
+									<R12>0</R12>
+									<R20>0</R20>
+									<R21>0</R21>
+									<R22>1</R22>
+								</CoordinateFrame>
+								<bool name="CanCollide">true</bool>
+								<bool name="CastShadow">true</bool>
+								<int name="CollisionGroupId">0</int>
+								<Color3uint8 name="Color3uint8">4288914085</Color3uint8>
+								<PhysicalProperties name="CustomPhysicalProperties">
+									<CustomPhysics>false</CustomPhysics>
+								</PhysicalProperties>
+								<int name="Duration">10</int>
+								<bool name="Enabled">true</bool>
+								<float name="FrontParamA">-0.5</float>
+								<float name="FrontParamB">0.5</float>
+								<token name="FrontSurface">0</token>
+								<token name="FrontSurfaceInput">0</token>
+								<float name="LeftParamA">-0.5</float>
+								<float name="LeftParamB">0.5</float>
+								<token name="LeftSurface">0</token>
+								<token name="LeftSurfaceInput">0</token>
+								<bool name="Locked">false</bool>
+								<bool name="Massless">false</bool>
+								<token name="Material">256</token>
+								<string name="Name">SpawnLocation</string>
+								<bool name="Neutral">true</bool>
+								<float name="Reflectance">0</float>
+								<float name="RightParamA">-0.5</float>
+								<float name="RightParamB">0.5</float>
+								<token name="RightSurface">0</token>
+								<token name="RightSurfaceInput">0</token>
+								<int name="RootPriority">0</int>
+								<Vector3 name="RotVelocity">
+									<X>0</X>
+									<Y>0</Y>
+									<Z>0</Z>
+								</Vector3>
+								<BinaryString name="Tags"></BinaryString>
+								<int name="TeamColor">194</int>
+								<float name="TopParamA">-0.5</float>
+								<float name="TopParamB">0.5</float>
+								<token name="TopSurface">0</token>
+								<token name="TopSurfaceInput">0</token>
+								<float name="Transparency">0</float>
+								<Vector3 name="Velocity">
+									<X>0</X>
+									<Y>0</Y>
+									<Z>0</Z>
+								</Vector3>
+								<token name="formFactorRaw">1</token>
+								<token name="shape">1</token>
+								<Vector3 name="size">
+									<X>12</X>
+									<Y>1</Y>
+									<Z>12</Z>
+								</Vector3>
+							</Properties>
+							<Item class="Decal" referent="RBX1F0832D3B844433784A5D1A2E5D0EB5E">
+								<Properties>
+									<BinaryString name="AttributesSerialize"></BinaryString>
+									<Color3 name="Color3">
+										<R>1</R>
+										<G>1</G>
+										<B>1</B>
+									</Color3>
+									<token name="Face">1</token>
+									<string name="Name">Decal</string>
+									<BinaryString name="Tags"></BinaryString>
+									<Content name="Texture"><url>rbxasset://textures/SpawnLocation.png</url></Content>
+									<float name="Transparency">0</float>
+								</Properties>
+							</Item>
+							<Item class="Weld" referent="RBX8F5B8CF6AC994136A9EC078931738347">
+								<Properties>
+									<BinaryString name="AttributesSerialize"></BinaryString>
+									<CoordinateFrame name="C0">
+										<X>-24.5</X>
+										<Y>10</Y>
+										<Z>256</Z>
+										<R00>-1</R00>
+										<R01>0</R01>
+										<R02>0</R02>
+										<R10>0</R10>
+										<R11>0</R11>
+										<R12>1</R12>
+										<R20>0</R20>
+										<R21>1</R21>
+										<R22>0</R22>
+									</CoordinateFrame>
+									<CoordinateFrame name="C1">
+										<X>-25</X>
+										<Y>-0.5</Y>
+										<Z>6</Z>
+										<R00>-1</R00>
+										<R01>0</R01>
+										<R02>0</R02>
+										<R10>0</R10>
+										<R11>0</R11>
+										<R12>1</R12>
+										<R20>0</R20>
+										<R21>1</R21>
+										<R22>0</R22>
+									</CoordinateFrame>
+									<bool name="Enabled">true</bool>
+									<bool name="IsAutoJoint">false</bool>
+									<string name="Name">Weld</string>
+									<Ref name="Part0">13</Ref>
+									<Ref name="Part1">RBXFB91CE04024A4CE6BDC95F151089AEE0</Ref>
+									<BinaryString name="Tags"></BinaryString>
+								</Properties>
+							</Item>
+						</Item>
+						<Item class="Part" referent="RBXC168C363620E4506ADDFB3A01AC3841C">
+							<Properties>
+								<bool name="Anchored">true</bool>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<float name="BackParamA">-0.5</float>
+								<float name="BackParamB">0.5</float>
+								<token name="BackSurface">0</token>
+								<token name="BackSurfaceInput">0</token>
+								<float name="BottomParamA">-0.5</float>
+								<float name="BottomParamB">0.5</float>
+								<token name="BottomSurface">0</token>
+								<token name="BottomSurfaceInput">0</token>
+								<CoordinateFrame name="CFrame">
+									<X>-7.5</X>
+									<Y>24</Y>
+									<Z>53</Z>
+									<R00>1</R00>
+									<R01>0</R01>
+									<R02>0</R02>
+									<R10>0</R10>
+									<R11>1</R11>
+									<R12>0</R12>
+									<R20>0</R20>
+									<R21>0</R21>
+									<R22>1</R22>
+								</CoordinateFrame>
+								<bool name="CanCollide">false</bool>
+								<bool name="CastShadow">true</bool>
+								<int name="CollisionGroupId">0</int>
+								<Color3uint8 name="Color3uint8">4288914085</Color3uint8>
+								<PhysicalProperties name="CustomPhysicalProperties">
+									<CustomPhysics>false</CustomPhysics>
+								</PhysicalProperties>
+								<float name="FrontParamA">-0.5</float>
+								<float name="FrontParamB">0.5</float>
+								<token name="FrontSurface">0</token>
+								<token name="FrontSurfaceInput">0</token>
+								<float name="LeftParamA">-0.5</float>
+								<float name="LeftParamB">0.5</float>
+								<token name="LeftSurface">0</token>
+								<token name="LeftSurfaceInput">0</token>
+								<bool name="Locked">false</bool>
+								<bool name="Massless">false</bool>
+								<token name="Material">256</token>
+								<string name="Name">GenPoint</string>
+								<float name="Reflectance">0</float>
+								<float name="RightParamA">-0.5</float>
+								<float name="RightParamB">0.5</float>
+								<token name="RightSurface">0</token>
+								<token name="RightSurfaceInput">0</token>
+								<int name="RootPriority">0</int>
+								<Vector3 name="RotVelocity">
+									<X>0</X>
+									<Y>0</Y>
+									<Z>0</Z>
+								</Vector3>
+								<BinaryString name="Tags"></BinaryString>
+								<float name="TopParamA">-0.5</float>
+								<float name="TopParamB">0.5</float>
+								<token name="TopSurface">0</token>
+								<token name="TopSurfaceInput">0</token>
+								<float name="Transparency">1</float>
+								<Vector3 name="Velocity">
+									<X>0</X>
+									<Y>0</Y>
+									<Z>0</Z>
+								</Vector3>
+								<token name="formFactorRaw">1</token>
+								<token name="shape">1</token>
+								<Vector3 name="size">
+									<X>49</X>
+									<Y>48</Y>
+									<Z>1</Z>
+								</Vector3>
+							</Properties>
+							<Item class="Weld" referent="RBX1209E592A68B4A0794256CCD93127569">
+								<Properties>
+									<BinaryString name="AttributesSerialize"></BinaryString>
+									<CoordinateFrame name="C0">
+										<X>-24.5</X>
+										<Y>10</Y>
+										<Z>256</Z>
+										<R00>-1</R00>
+										<R01>0</R01>
+										<R02>0</R02>
+										<R10>0</R10>
+										<R11>0</R11>
+										<R12>1</R12>
+										<R20>0</R20>
+										<R21>1</R21>
+										<R22>0</R22>
+									</CoordinateFrame>
+									<CoordinateFrame name="C1">
+										<X>-24.5</X>
+										<Y>-24</Y>
+										<Z>203</Z>
+										<R00>-1</R00>
+										<R01>0</R01>
+										<R02>0</R02>
+										<R10>0</R10>
+										<R11>0</R11>
+										<R12>1</R12>
+										<R20>0</R20>
+										<R21>1</R21>
+										<R22>0</R22>
+									</CoordinateFrame>
+									<bool name="Enabled">true</bool>
+									<bool name="IsAutoJoint">false</bool>
+									<string name="Name">Weld</string>
+									<Ref name="Part0">13</Ref>
+									<Ref name="Part1">RBXC168C363620E4506ADDFB3A01AC3841C</Ref>
+									<BinaryString name="Tags"></BinaryString>
+								</Properties>
+							</Item>
+						</Item>
+					</Item>
+				</Item>
+			</Item>
+			<Item class="Tool" referent="RBX85295EBD27FB468998F4B488BF4C5C64">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="CanBeDropped">true</bool>
+					<bool name="Enabled">true</bool>
+					<CoordinateFrame name="Grip">
+						<X>0</X>
+						<Y>0</Y>
+						<Z>0</Z>
+						<R00>1</R00>
+						<R01>0</R01>
+						<R02>0</R02>
+						<R10>0</R10>
+						<R11>1</R11>
+						<R12>0</R12>
+						<R20>0</R20>
+						<R21>0</R21>
+						<R22>1</R22>
+					</CoordinateFrame>
+					<bool name="ManualActivationOnly">false</bool>
+					<string name="Name">Road2</string>
+					<bool name="RequiresHandle">true</bool>
+					<BinaryString name="Tags"></BinaryString>
+					<Content name="TextureId"><null></null></Content>
+					<string name="ToolTip"></string>
+				</Properties>
+				<Item class="Model" referent="RBX4772B00036AE4487A030576E314E9281">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<CoordinateFrame name="ModelInPrimary">
+							<X>0</X>
+							<Y>0</Y>
+							<Z>0</Z>
+							<R00>1</R00>
+							<R01>0</R01>
+							<R02>0</R02>
+							<R10>0</R10>
+							<R11>1</R11>
+							<R12>0</R12>
+							<R20>0</R20>
+							<R21>0</R21>
+							<R22>1</R22>
+						</CoordinateFrame>
+						<string name="Name">Model</string>
+						<Ref name="PrimaryPart">RBX108E801754D34B1DAE919F3EB847772E</Ref>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+					<Item class="Part" referent="RBX108E801754D34B1DAE919F3EB847772E">
+						<Properties>
+							<bool name="Anchored">true</bool>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<float name="BackParamA">-0.5</float>
+							<float name="BackParamB">0.5</float>
+							<token name="BackSurface">0</token>
+							<token name="BackSurfaceInput">0</token>
+							<float name="BottomParamA">-0.5</float>
+							<float name="BottomParamB">0.5</float>
+							<token name="BottomSurface">4</token>
+							<token name="BottomSurfaceInput">0</token>
+							<CoordinateFrame name="CFrame">
+								<X>0.5</X>
+								<Y>10.0000124</Y>
+								<Z>0</Z>
+								<R00>1</R00>
+								<R01>0</R01>
+								<R02>0</R02>
+								<R10>0</R10>
+								<R11>1</R11>
+								<R12>0</R12>
+								<R20>0</R20>
+								<R21>0</R21>
+								<R22>1</R22>
+							</CoordinateFrame>
+							<bool name="CanCollide">true</bool>
+							<bool name="CastShadow">true</bool>
+							<int name="CollisionGroupId">0</int>
+							<Color3uint8 name="Color3uint8">4284636770</Color3uint8>
+							<PhysicalProperties name="CustomPhysicalProperties">
+								<CustomPhysics>false</CustomPhysics>
+							</PhysicalProperties>
+							<float name="FrontParamA">-0.5</float>
+							<float name="FrontParamB">0.5</float>
+							<token name="FrontSurface">0</token>
+							<token name="FrontSurfaceInput">0</token>
+							<float name="LeftParamA">-0.5</float>
+							<float name="LeftParamB">0.5</float>
+							<token name="LeftSurface">0</token>
+							<token name="LeftSurfaceInput">0</token>
+							<bool name="Locked">true</bool>
+							<bool name="Massless">false</bool>
+							<token name="Material">256</token>
+							<string name="Name">Root</string>
+							<float name="Reflectance">0</float>
+							<float name="RightParamA">-0.5</float>
+							<float name="RightParamB">0.5</float>
+							<token name="RightSurface">0</token>
+							<token name="RightSurfaceInput">0</token>
+							<int name="RootPriority">0</int>
+							<Vector3 name="RotVelocity">
+								<X>0</X>
+								<Y>0</Y>
+								<Z>0</Z>
+							</Vector3>
+							<BinaryString name="Tags"></BinaryString>
+							<float name="TopParamA">-0.5</float>
+							<float name="TopParamB">0.5</float>
+							<token name="TopSurface">3</token>
+							<token name="TopSurfaceInput">0</token>
+							<float name="Transparency">0</float>
+							<Vector3 name="Velocity">
+								<X>0</X>
+								<Y>0</Y>
+								<Z>0</Z>
+							</Vector3>
+							<token name="formFactorRaw">1</token>
+							<token name="shape">1</token>
+							<Vector3 name="size">
+								<X>49</X>
+								<Y>20</Y>
+								<Z>512</Z>
+							</Vector3>
+						</Properties>
+						<Item class="Part" referent="RBXA240F4F1690C48E5B4075B3640E78D8F">
+							<Properties>
+								<bool name="Anchored">true</bool>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<float name="BackParamA">-0.5</float>
+								<float name="BackParamB">0.5</float>
+								<token name="BackSurface">0</token>
+								<token name="BackSurfaceInput">0</token>
+								<float name="BottomParamA">-0.5</float>
+								<float name="BottomParamB">0.5</float>
+								<token name="BottomSurface">0</token>
+								<token name="BottomSurfaceInput">0</token>
+								<CoordinateFrame name="CFrame">
+									<X>0.5</X>
+									<Y>44.0000801</Y>
+									<Z>53</Z>
+									<R00>1</R00>
+									<R01>0</R01>
+									<R02>0</R02>
+									<R10>0</R10>
+									<R11>1</R11>
+									<R12>0</R12>
+									<R20>0</R20>
+									<R21>0</R21>
+									<R22>1</R22>
+								</CoordinateFrame>
+								<bool name="CanCollide">false</bool>
+								<bool name="CastShadow">true</bool>
+								<int name="CollisionGroupId">0</int>
+								<Color3uint8 name="Color3uint8">4288914085</Color3uint8>
+								<PhysicalProperties name="CustomPhysicalProperties">
+									<CustomPhysics>false</CustomPhysics>
+								</PhysicalProperties>
+								<float name="FrontParamA">-0.5</float>
+								<float name="FrontParamB">0.5</float>
+								<token name="FrontSurface">0</token>
+								<token name="FrontSurfaceInput">0</token>
+								<float name="LeftParamA">-0.5</float>
+								<float name="LeftParamB">0.5</float>
+								<token name="LeftSurface">0</token>
+								<token name="LeftSurfaceInput">0</token>
+								<bool name="Locked">false</bool>
+								<bool name="Massless">false</bool>
+								<token name="Material">256</token>
+								<string name="Name">GenPoint</string>
+								<float name="Reflectance">0</float>
+								<float name="RightParamA">-0.5</float>
+								<float name="RightParamB">0.5</float>
+								<token name="RightSurface">0</token>
+								<token name="RightSurfaceInput">0</token>
+								<int name="RootPriority">0</int>
+								<Vector3 name="RotVelocity">
+									<X>0</X>
+									<Y>0</Y>
+									<Z>0</Z>
+								</Vector3>
+								<BinaryString name="Tags"></BinaryString>
+								<float name="TopParamA">-0.5</float>
+								<float name="TopParamB">0.5</float>
+								<token name="TopSurface">0</token>
+								<token name="TopSurfaceInput">0</token>
+								<float name="Transparency">1</float>
+								<Vector3 name="Velocity">
+									<X>0</X>
+									<Y>0</Y>
+									<Z>0</Z>
+								</Vector3>
+								<token name="formFactorRaw">1</token>
+								<token name="shape">1</token>
+								<Vector3 name="size">
+									<X>49</X>
+									<Y>48</Y>
+									<Z>1</Z>
+								</Vector3>
+							</Properties>
+							<Item class="Weld" referent="RBX500465AEA7DA4E06BBC96F13D48DB4ED">
+								<Properties>
+									<BinaryString name="AttributesSerialize"></BinaryString>
+									<CoordinateFrame name="C0">
+										<X>-24.5</X>
+										<Y>10</Y>
+										<Z>256</Z>
+										<R00>-1</R00>
+										<R01>0</R01>
+										<R02>0</R02>
+										<R10>0</R10>
+										<R11>0</R11>
+										<R12>1</R12>
+										<R20>0</R20>
+										<R21>1</R21>
+										<R22>-0</R22>
+									</CoordinateFrame>
+									<CoordinateFrame name="C1">
+										<X>-24.5</X>
+										<Y>-24</Y>
+										<Z>203</Z>
+										<R00>-1</R00>
+										<R01>0</R01>
+										<R02>0</R02>
+										<R10>0</R10>
+										<R11>0</R11>
+										<R12>1</R12>
+										<R20>0</R20>
+										<R21>1</R21>
+										<R22>-0</R22>
+									</CoordinateFrame>
+									<bool name="Enabled">true</bool>
+									<bool name="IsAutoJoint">false</bool>
+									<string name="Name">Weld</string>
+									<Ref name="Part0">RBX108E801754D34B1DAE919F3EB847772E</Ref>
+									<Ref name="Part1">RBXA240F4F1690C48E5B4075B3640E78D8F</Ref>
+									<BinaryString name="Tags"></BinaryString>
+								</Properties>
+							</Item>
+						</Item>
+					</Item>
+				</Item>
 			</Item>
 		</Item>
 	</Item>

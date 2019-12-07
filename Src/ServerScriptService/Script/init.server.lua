@@ -1,8 +1,20 @@
+math.randomseed(os.time())
+
 local PlayerManager = require(game.ReplicatedStorage.Source.PlayerManager)
+local RoadManager = require(game.ReplicatedStorage.Source.RoadManager)
 
-game.ReplicatedStorage.Events.StartRunning.OnServerEvent:connect(function(player)
-    print('On Start Running')
-    wait(3)
+RoadManager:GenRoad()
+RoadManager:GenRoad()
 
-    PlayerManager:Run(player)
-end)
+game.ReplicatedStorage.Events.StartRunning.OnServerEvent:connect(
+    function(player)
+        print('On Start Running')
+        wait(3)
+
+        PlayerManager:Run(player)
+    end)
+
+game.ReplicatedStorage.Events.GenRoad.OnServerEvent:connect(
+    function()
+        RoadManager:GenRoad()
+    end)
