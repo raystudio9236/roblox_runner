@@ -25,7 +25,21 @@
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "Source": {
-        "$path": "src"
+        "$path": "Src/ReplicatedStorage"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Source": {
+        "$path": "Src/ServerScriptService"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+
+      "StarterPlayerScripts": {
+          "$className": "StarterPlayerScripts",
+          "$path": "Src/StarterPlayerScripts"
       }
     },
     "SoundService": {
