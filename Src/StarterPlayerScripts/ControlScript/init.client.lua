@@ -82,7 +82,7 @@ ContextActionService:BindAction('Right',
 
 -- fire Key
 mouse.Button1Down:Connect(function()
-        -- if not controlsEnabled then return end
+        if not controlsEnabled then return end
 
         game.ReplicatedStorage.Events.Fire:FireServer(mouse.Hit.p)
     end)

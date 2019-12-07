@@ -40,26 +40,26 @@
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<CoordinateFrame name="CFrame">
-					<X>42.1980667</X>
-					<Y>98.2368698</Y>
-					<Z>132.661316</Z>
-					<R00>0.906254888</R00>
-					<R01>-0.366097242</R01>
-					<R02>0.211364597</R02>
-					<R10>1.49011594e-08</R10>
-					<R11>0.49999696</R11>
-					<R12>0.866027236</R12>
-					<R20>-0.422731787</R20>
-					<R21>-0.784841418</R21>
-					<R22>0.453124672</R22>
+					<X>-49.9312363</X>
+					<Y>115.159866</Y>
+					<Z>277.850769</Z>
+					<R00>0.897198081</R00>
+					<R01>-0.363957644</R01>
+					<R02>0.250140935</R02>
+					<R10>1.49011612e-08</R10>
+					<R11>0.566405892</R11>
+					<R12>0.824126482</R12>
+					<R20>-0.441628397</R20>
+					<R21>-0.739404678</R21>
+					<R22>0.508178294</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">4</token>
 				<float name="FieldOfView">45</float>
 				<CoordinateFrame name="Focus">
-					<X>41.7753372</X>
-					<Y>96.5048141</Y>
-					<Z>131.755066</Z>
+					<X>-50.4315186</X>
+					<Y>113.511612</Y>
+					<Z>276.834412</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -382,7 +382,7 @@ ContextActionService:BindAction('Right',
 
 -- fire Key
 mouse.Button1Down:Connect(function()
-        -- if not controlsEnabled then return end
+        if not controlsEnabled then return end
 
         game.ReplicatedStorage.Events.Fire:FireServer(mouse.Hit.p)
     end)]]></ProtectedString>
@@ -700,8 +700,6 @@ function RoadManager:GenRoad()
 
     local startPos = self.roadIdx * ROAD_OFFSET - ROAD_OFFSET / 2
 
-    local glasses = {}
-
     for i=0, math.ceil(ROAD_OFFSET / OB_INTERVAL), 1 do
         if not (self.roadIdx == 0 and i <= 3) then
             local type = math.ceil(math.random(1, 4))
@@ -718,9 +716,7 @@ function RoadManager:GenRoad()
 
             local glass = obj:Clone()
             glass.Parent = workspace
-            glass:SetPrimaryPartCFrame(CFrame.new(0, 13, startPos + i * OB_INTERVAL))
-
-            table.insert(glasses, glass)
+            glass:SetPrimaryPartCFrame(CFrame.new(0, 10.5, startPos + i * OB_INTERVAL))
         end
     end
 
@@ -732,23 +728,6 @@ function RoadManager:GenRoad()
         oldRoad:Destroy()
         print('Clear Old Road')
     end
-
-    wait(1)
-
-    for _, glass in ipairs(glasses) do
-        -- glass.Part.Anchored = false
-        glass.Part.Glass.Anchored = false
-        local g2 = glass.Part:FindFirstChild('Glass2')
-        if g2 then
-            g2.Anchored = false
-        end
-        local g3 = glass.Part:FindFirstChild('Glass3')
-        if g3 then
-            g3.Anchored = false
-        end
-    end
-
-    glasses = nil
 end
 
 return RoadManager]]></ProtectedString>
@@ -776,7 +755,7 @@ local function createBullet(target)
     local direction = (target - pos).unit
     bullet.Velocity = direction * 500
 
-    wait(0.2)
+    wait(0.1)
 
     bullet.Transparency = 0
 end
@@ -816,6 +795,158 @@ return FireManager]]></ProtectedString>
 return config]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBX8BF6DD4CE8BA462993901EE9D93D3955">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">Glass</string>
+					<string name="ScriptGuid">{8DBEFE10-D8C2-4C65-A372-22AFF2B3E66C}</string>
+					<ProtectedString name="Source"><![CDATA[local Object = require(game.ReplicatedStorage.Source.Base.classic)
+
+local Glass = Object:extend()
+local players = game:GetService("Players")
+
+local function BeHit(glass, delayTime)
+    glass.Anchored = false
+    glass.Parent.Anchored = false
+
+    wait(delayTime)
+
+    glass.Parent.Parent:Destroy()
+end
+
+function Glass:new()
+    self.touched = false
+end
+
+function Glass:Init(script)
+    self.script = script
+
+    local glass = script.Parent
+    glass.Touched:connect(function(other)
+        if self.touched then return end
+
+        if other.Name == 'IronBall' then
+            self.touched = true
+            print('Hit Ball')
+            BeHit(glass, 1.5)
+        else
+            for i, player in pairs(players:GetPlayers()) do
+                if other.Parent.Name == player.Name then
+                    self.touched = true
+                    print('Hit Player')
+                    BeHit(glass, 0.2)
+                end
+            end
+        end
+    end)
+end
+
+return Glass]]></ProtectedString>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="Script" referent="RBXA314C37F3570460FA8B038C96A7ACA9A">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="Disabled">false</bool>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">GlassWrap</string>
+					<string name="ScriptGuid">{5ABC1C92-7BDD-4B6F-8948-813FAE01F89D}</string>
+					<ProtectedString name="Source"><![CDATA[local Glass = require(game.ReplicatedStorage.Source.Glass)
+
+local glass = Glass()
+glass:Init(script)]]></ProtectedString>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBX8BE631911B974937B430644E84B28B50">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">Base</string>
+					<string name="ScriptGuid">{7197A682-EDC7-4664-B95B-29527DFEFBCD}</string>
+					<ProtectedString name="Source"></ProtectedString>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXDC1BFC0DC5A847888DC8FEB2557A815A">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">classic</string>
+						<string name="ScriptGuid"></string>
+						<ProtectedString name="Source"><![CDATA[--
+-- classic
+--
+-- Copyright (c) 2014, rxi
+--
+-- This module is free software; you can redistribute it and/or modify it under
+-- the terms of the MIT license. See LICENSE for details.
+--
+
+
+local Object = {}
+Object.__index = Object
+
+
+function Object:new()
+end
+
+
+function Object:extend()
+  local cls = {}
+  for k, v in pairs(self) do
+    if k:find("__") == 1 then
+      cls[k] = v
+    end
+  end
+  cls.__index = cls
+  cls.super = self
+  setmetatable(cls, self)
+  return cls
+end
+
+
+function Object:implement(...)
+  for _, cls in pairs({...}) do
+    for k, v in pairs(cls) do
+      if self[k] == nil and type(v) == "function" then
+        self[k] = v
+      end
+    end
+  end
+end
+
+
+function Object:is(T)
+  local mt = getmetatable(self)
+  while mt do
+    if mt == T then
+      return true
+    end
+    mt = getmetatable(mt)
+  end
+  return false
+end
+
+
+function Object:__tostring()
+  return "Object"
+end
+
+
+function Object:__call(...)
+  local obj = setmetatable({}, self)
+  obj:new(...)
+  return obj
+end
+
+
+return Object]]></ProtectedString>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
 			</Item>
 		</Item>
 		<Item class="Folder" referent="RBX2351C0DA2DD44816B2D84D56AA32CE27">
@@ -1332,7 +1463,7 @@ return config]]></ProtectedString>
 							<float name="TopParamB">0.5</float>
 							<token name="TopSurface">0</token>
 							<token name="TopSurfaceInput">0</token>
-							<float name="Transparency">0.699999988</float>
+							<float name="Transparency">0.400000006</float>
 							<Vector3 name="Velocity">
 								<X>0</X>
 								<Y>0</Y>
@@ -1346,6 +1477,20 @@ return config]]></ProtectedString>
 								<Z>1</Z>
 							</Vector3>
 						</Properties>
+						<Item class="Script" referent="RBX610C6E10060546FEA91F547275E1E3F1">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<bool name="Disabled">false</bool>
+								<Content name="LinkedSource"><null></null></Content>
+								<string name="Name">GlassWrap</string>
+								<string name="ScriptGuid">{FFD5E20B-F16F-45EC-9ED9-6FF8415BD04C}</string>
+								<ProtectedString name="Source"><![CDATA[local Glass = require(game.ReplicatedStorage.Source.Glass)
+
+local glass = Glass()
+glass:Init(script)]]></ProtectedString>
+								<BinaryString name="Tags"></BinaryString>
+							</Properties>
+						</Item>
 					</Item>
 				</Item>
 			</Item>
@@ -1506,7 +1651,7 @@ return config]]></ProtectedString>
 							<float name="TopParamB">0.5</float>
 							<token name="TopSurface">0</token>
 							<token name="TopSurfaceInput">0</token>
-							<float name="Transparency">0.699999988</float>
+							<float name="Transparency">0.400000006</float>
 							<Vector3 name="Velocity">
 								<X>0</X>
 								<Y>0</Y>
@@ -1520,6 +1665,20 @@ return config]]></ProtectedString>
 								<Z>1</Z>
 							</Vector3>
 						</Properties>
+						<Item class="Script" referent="RBX2CEC17DCBFBB4E9AB9AD96768F886AEE">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<bool name="Disabled">false</bool>
+								<Content name="LinkedSource"><null></null></Content>
+								<string name="Name">GlassWrap</string>
+								<string name="ScriptGuid">{B30E9CE6-23D4-4673-BAAE-8133F5485DEE}</string>
+								<ProtectedString name="Source"><![CDATA[local Glass = require(game.ReplicatedStorage.Source.Glass)
+
+local glass = Glass()
+glass:Init(script)]]></ProtectedString>
+								<BinaryString name="Tags"></BinaryString>
+							</Properties>
+						</Item>
 					</Item>
 				</Item>
 			</Item>
@@ -1680,7 +1839,7 @@ return config]]></ProtectedString>
 							<float name="TopParamB">0.5</float>
 							<token name="TopSurface">0</token>
 							<token name="TopSurfaceInput">0</token>
-							<float name="Transparency">0.699999988</float>
+							<float name="Transparency">0.400000006</float>
 							<Vector3 name="Velocity">
 								<X>0</X>
 								<Y>0</Y>
@@ -1694,6 +1853,20 @@ return config]]></ProtectedString>
 								<Z>1.5</Z>
 							</Vector3>
 						</Properties>
+						<Item class="Script" referent="RBXB0A2B421943244AB9C0FB45091B7585B">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<bool name="Disabled">false</bool>
+								<Content name="LinkedSource"><null></null></Content>
+								<string name="Name">GlassWrap</string>
+								<string name="ScriptGuid">{16F0B7E6-5903-45C5-9A70-9761915D6023}</string>
+								<ProtectedString name="Source"><![CDATA[local Glass = require(game.ReplicatedStorage.Source.Glass)
+
+local glass = Glass()
+glass:Init(script)]]></ProtectedString>
+								<BinaryString name="Tags"></BinaryString>
+							</Properties>
+						</Item>
 					</Item>
 					<Item class="Part" referent="RBX8C5990DE143E477596F57A5887EAC130">
 						<Properties>
@@ -1756,7 +1929,7 @@ return config]]></ProtectedString>
 							<float name="TopParamB">0.5</float>
 							<token name="TopSurface">0</token>
 							<token name="TopSurfaceInput">0</token>
-							<float name="Transparency">0.699999988</float>
+							<float name="Transparency">0.400000006</float>
 							<Vector3 name="Velocity">
 								<X>0</X>
 								<Y>0</Y>
@@ -1770,6 +1943,20 @@ return config]]></ProtectedString>
 								<Z>1.5</Z>
 							</Vector3>
 						</Properties>
+						<Item class="Script" referent="RBX3B04E9C79CF947DFAAA3C5DB1C068D3D">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<bool name="Disabled">false</bool>
+								<Content name="LinkedSource"><null></null></Content>
+								<string name="Name">GlassWrap</string>
+								<string name="ScriptGuid">{C6E5B5C7-68BA-4E88-A937-6B36D0C678FD}</string>
+								<ProtectedString name="Source"><![CDATA[local Glass = require(game.ReplicatedStorage.Source.Glass)
+
+local glass = Glass()
+glass:Init(script)]]></ProtectedString>
+								<BinaryString name="Tags"></BinaryString>
+							</Properties>
+						</Item>
 					</Item>
 					<Item class="Part" referent="RBX84120E3EFED64696AEFF99EBDE885BEE">
 						<Properties>
@@ -1832,7 +2019,7 @@ return config]]></ProtectedString>
 							<float name="TopParamB">0.5</float>
 							<token name="TopSurface">0</token>
 							<token name="TopSurfaceInput">0</token>
-							<float name="Transparency">0.699999988</float>
+							<float name="Transparency">0.400000006</float>
 							<Vector3 name="Velocity">
 								<X>0</X>
 								<Y>0</Y>
@@ -1846,6 +2033,20 @@ return config]]></ProtectedString>
 								<Z>1.5</Z>
 							</Vector3>
 						</Properties>
+						<Item class="Script" referent="RBX1D07F0897F9C46B6A8A2369AD37E3F10">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<bool name="Disabled">false</bool>
+								<Content name="LinkedSource"><null></null></Content>
+								<string name="Name">GlassWrap</string>
+								<string name="ScriptGuid">{37CEB575-BF7A-44E2-BAA9-A81647F471ED}</string>
+								<ProtectedString name="Source"><![CDATA[local Glass = require(game.ReplicatedStorage.Source.Glass)
+
+local glass = Glass()
+glass:Init(script)]]></ProtectedString>
+								<BinaryString name="Tags"></BinaryString>
+							</Properties>
+						</Item>
 					</Item>
 				</Item>
 			</Item>
@@ -2006,7 +2207,7 @@ return config]]></ProtectedString>
 							<float name="TopParamB">0.5</float>
 							<token name="TopSurface">0</token>
 							<token name="TopSurfaceInput">0</token>
-							<float name="Transparency">0.699999988</float>
+							<float name="Transparency">0.400000006</float>
 							<Vector3 name="Velocity">
 								<X>0</X>
 								<Y>0</Y>
@@ -2020,6 +2221,20 @@ return config]]></ProtectedString>
 								<Z>1.5</Z>
 							</Vector3>
 						</Properties>
+						<Item class="Script" referent="RBX777DB12A0EB346AC9FEE49A83B35184F">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<bool name="Disabled">false</bool>
+								<Content name="LinkedSource"><null></null></Content>
+								<string name="Name">GlassWrap</string>
+								<string name="ScriptGuid">{FA30F936-D0A2-4425-B2B7-1619B8447DD9}</string>
+								<ProtectedString name="Source"><![CDATA[local Glass = require(game.ReplicatedStorage.Source.Glass)
+
+local glass = Glass()
+glass:Init(script)]]></ProtectedString>
+								<BinaryString name="Tags"></BinaryString>
+							</Properties>
+						</Item>
 					</Item>
 				</Item>
 			</Item>

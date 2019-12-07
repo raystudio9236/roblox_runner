@@ -43,8 +43,6 @@ function RoadManager:GenRoad()
 
     local startPos = self.roadIdx * ROAD_OFFSET - ROAD_OFFSET / 2
 
-    local glasses = {}
-
     for i=0, math.ceil(ROAD_OFFSET / OB_INTERVAL), 1 do
         if not (self.roadIdx == 0 and i <= 3) then
             local type = math.ceil(math.random(1, 4))
@@ -62,8 +60,6 @@ function RoadManager:GenRoad()
             local glass = obj:Clone()
             glass.Parent = workspace
             glass:SetPrimaryPartCFrame(CFrame.new(0, 10.5, startPos + i * OB_INTERVAL))
-
-            table.insert(glasses, glass)
         end
     end
 
@@ -75,23 +71,6 @@ function RoadManager:GenRoad()
         oldRoad:Destroy()
         print('Clear Old Road')
     end
-
-    wait(1)
-
-    for _, glass in ipairs(glasses) do
-        -- glass.Part.Anchored = false
-        glass.Part.Glass.Anchored = false
-        local g2 = glass.Part:FindFirstChild('Glass2')
-        if g2 then
-            g2.Anchored = false
-        end
-        local g3 = glass.Part:FindFirstChild('Glass3')
-        if g3 then
-            g3.Anchored = false
-        end
-    end
-
-    glasses = nil
 end
 
 return RoadManager
