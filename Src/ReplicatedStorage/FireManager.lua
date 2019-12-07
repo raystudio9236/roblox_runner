@@ -13,17 +13,26 @@ local function createBullet(target)
     local direction = (target - pos).unit
     bullet.Velocity = direction * 500
 
-    wait(0.2)
+    wait(0.1)
 
     bullet.Transparency = 0
 end
 
 function FireManager:Init(server)
     self.server = server
+    self.fireCd = server.PlayerConfig.FireCd
+    self.canFire = true
 end
 
 function FireManager:Fire(pos)
-    createBullet(pos)
+    if self.canFire then
+        self.canFire = false
+        createBullet(pos)
+
+        delay(self.fireCd, function()
+            self.canFire = true
+        end)
+    end
 end
 
 return FireManager

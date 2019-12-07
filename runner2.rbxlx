@@ -573,7 +573,8 @@ end)]]></ProtectedString>
 local Server = {
     PlayerManager = require(game.ReplicatedStorage.Source.PlayerManager),
     RoadManager = require(game.ReplicatedStorage.Source.RoadManager),
-    FireManager = require(game.ReplicatedStorage.Source.FireManager)
+    FireManager = require(game.ReplicatedStorage.Source.FireManager),
+    PlayerConfig = require(game.ReplicatedStorage.Source.PlayerConfig),
 }
 
 Server.PlayerManager:Init(Server)
@@ -782,13 +783,37 @@ end
 
 function FireManager:Init(server)
     self.server = server
+    self.fireCd = server.PlayerConfig.FireCd
+    self.canFire = true
 end
 
 function FireManager:Fire(pos)
-    createBullet(pos)
+    if self.canFire then
+        self.canFire = false
+        createBullet(pos)
+
+        delay(self.fireCd, function()
+            self.canFire = true
+        end)
+    end
 end
 
 return FireManager]]></ProtectedString>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBXD37020BC0EE841FEA57FE06D97348B3B">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">PlayerConfig</string>
+					<string name="ScriptGuid">{4A77F82C-A046-4A73-84F4-5B77ECA338D6}</string>
+					<ProtectedString name="Source"><![CDATA[local config = {
+    DefaultBulletCnt = 10,
+    FireCd = 2,
+}
+
+return config]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
@@ -1318,7 +1343,7 @@ return FireManager]]></ProtectedString>
 							<Vector3 name="size">
 								<X>39</X>
 								<Y>18</Y>
-								<Z>0.5</Z>
+								<Z>1</Z>
 							</Vector3>
 						</Properties>
 					</Item>
@@ -1492,7 +1517,7 @@ return FireManager]]></ProtectedString>
 							<Vector3 name="size">
 								<X>39</X>
 								<Y>18</Y>
-								<Z>0.5</Z>
+								<Z>1</Z>
 							</Vector3>
 						</Properties>
 					</Item>
@@ -1666,7 +1691,7 @@ return FireManager]]></ProtectedString>
 							<Vector3 name="size">
 								<X>63</X>
 								<Y>3</Y>
-								<Z>1</Z>
+								<Z>1.5</Z>
 							</Vector3>
 						</Properties>
 					</Item>
@@ -1742,7 +1767,7 @@ return FireManager]]></ProtectedString>
 							<Vector3 name="size">
 								<X>7</X>
 								<Y>6</Y>
-								<Z>1</Z>
+								<Z>1.5</Z>
 							</Vector3>
 						</Properties>
 					</Item>
@@ -1818,7 +1843,7 @@ return FireManager]]></ProtectedString>
 							<Vector3 name="size">
 								<X>7</X>
 								<Y>6</Y>
-								<Z>1</Z>
+								<Z>1.5</Z>
 							</Vector3>
 						</Properties>
 					</Item>
@@ -1992,7 +2017,7 @@ return FireManager]]></ProtectedString>
 							<Vector3 name="size">
 								<X>63</X>
 								<Y>3</Y>
-								<Z>0.5</Z>
+								<Z>1.5</Z>
 							</Vector3>
 						</Properties>
 					</Item>

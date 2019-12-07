@@ -3,7 +3,8 @@ math.randomseed(os.time())
 local Server = {
     PlayerManager = require(game.ReplicatedStorage.Source.PlayerManager),
     RoadManager = require(game.ReplicatedStorage.Source.RoadManager),
-    FireManager = require(game.ReplicatedStorage.Source.FireManager)
+    FireManager = require(game.ReplicatedStorage.Source.FireManager),
+    PlayerConfig = require(game.ReplicatedStorage.Source.PlayerConfig),
 }
 
 Server.PlayerManager:Init(Server)

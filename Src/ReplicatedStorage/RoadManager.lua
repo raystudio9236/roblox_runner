@@ -61,7 +61,7 @@ function RoadManager:GenRoad()
 
             local glass = obj:Clone()
             glass.Parent = workspace
-            glass:SetPrimaryPartCFrame(CFrame.new(0, 13, startPos + i * OB_INTERVAL))
+            glass:SetPrimaryPartCFrame(CFrame.new(0, 10.5, startPos + i * OB_INTERVAL))
 
             table.insert(glasses, glass)
         end
