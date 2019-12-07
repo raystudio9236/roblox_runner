@@ -1,4 +1,5 @@
 local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
 
 repeat
     wait()
@@ -42,18 +43,22 @@ game:GetService('RunService'):BindToRenderStep(
 
 print('Player Start Running')
 
-game.ReplicatedStorage.Events.StartRunning:FireServer(player)
+game.ReplicatedStorage.Events.StartRunning:FireServer()
 
 local ContextActionService = game:GetService("ContextActionService")
 -- Jump Key
 ContextActionService:BindAction('Jump',
     function(actionName, inputState, inputObject)
+        if not controlsEnabled then return end
+
         needJump = true;
     end, false, 'w', Enum.KeyCode.Space)
 
 -- Left Key
 ContextActionService:BindAction('Left',
     function(actionName, inputState, inputObject)
+        if not controlsEnabled then return end
+
         if inputState == Enum.UserInputState.End then
             needLeft = false
         else
@@ -65,6 +70,8 @@ ContextActionService:BindAction('Left',
 -- right Key
 ContextActionService:BindAction('Right',
     function(actionName, inputState, inputObject)
+        if not controlsEnabled then return end
+
         if inputState == Enum.UserInputState.End then
             needRight = false
         else
@@ -72,3 +79,10 @@ ContextActionService:BindAction('Right',
             needLeft = false
         end
     end, false, 'd')
+
+-- fire Key
+mouse.Button1Down:Connect(function()
+        -- if not controlsEnabled then return end
+
+        game.ReplicatedStorage.Events.Fire:FireServer(mouse.Hit.p)
+    end)

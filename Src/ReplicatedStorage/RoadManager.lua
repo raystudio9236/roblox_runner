@@ -10,6 +10,11 @@ RoadManager.roads = {}
 
 local ROAD_OFFSET = -512
 
+function RoadManager:Init(server)
+    self.server = server
+end
+
+
 function RoadManager:GenRoad()
     print('GenRoad')
 

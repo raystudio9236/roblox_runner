@@ -40,26 +40,26 @@
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<CoordinateFrame name="CFrame">
-					<X>-196.206131</X>
-					<Y>42.4274406</Y>
-					<Z>40.4577713</Z>
-					<R00>0.201459214</R00>
-					<R01>0.0410676189</R01>
-					<R02>-0.978635609</R02>
+					<X>-89.8105316</X>
+					<Y>-46.3899994</Y>
+					<Z>-55.2428322</Z>
+					<R00>-0.715549469</R00>
+					<R01>0.00290467241</R01>
+					<R02>0.698556185</R02>
 					<R10>-0</R10>
-					<R11>0.999120653</R11>
-					<R12>0.0419272594</R12>
-					<R20>0.979496896</R20>
-					<R21>-0.00844663288</R21>
-					<R22>0.201282069</R22>
+					<R11>0.999991536</R11>
+					<R12>-0.00415807264</R12>
+					<R20>-0.698562205</R20>
+					<R21>-0.00297530671</R21>
+					<R22>-0.71554327</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
-				<token name="CameraType">0</token>
+				<token name="CameraType">4</token>
 				<float name="FieldOfView">45</float>
 				<CoordinateFrame name="Focus">
-					<X>0.5</X>
-					<Y>34.0000458</Y>
-					<Z>0</Z>
+					<X>-90.509079</X>
+					<Y>-46.3858414</Y>
+					<Z>-54.527298</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -299,6 +299,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 					<string name="Name">ControlScript</string>
 					<string name="ScriptGuid">{E6D20F25-BCB5-4496-9FA6-222BE32F2CA8}</string>
 					<ProtectedString name="Source"><![CDATA[local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
 
 repeat
     wait()
@@ -342,18 +343,22 @@ game:GetService('RunService'):BindToRenderStep(
 
 print('Player Start Running')
 
-game.ReplicatedStorage.Events.StartRunning:FireServer(player)
+game.ReplicatedStorage.Events.StartRunning:FireServer()
 
 local ContextActionService = game:GetService("ContextActionService")
 -- Jump Key
 ContextActionService:BindAction('Jump',
     function(actionName, inputState, inputObject)
+        if not controlsEnabled then return end
+
         needJump = true;
     end, false, 'w', Enum.KeyCode.Space)
 
 -- Left Key
 ContextActionService:BindAction('Left',
     function(actionName, inputState, inputObject)
+        if not controlsEnabled then return end
+
         if inputState == Enum.UserInputState.End then
             needLeft = false
         else
@@ -365,13 +370,22 @@ ContextActionService:BindAction('Left',
 -- right Key
 ContextActionService:BindAction('Right',
     function(actionName, inputState, inputObject)
+        if not controlsEnabled then return end
+
         if inputState == Enum.UserInputState.End then
             needRight = false
         else
             needRight = true
             needLeft = false
         end
-    end, false, 'd')]]></ProtectedString>
+    end, false, 'd')
+
+-- fire Key
+mouse.Button1Down:Connect(function()
+        -- if not controlsEnabled then return end
+
+        game.ReplicatedStorage.Events.Fire:FireServer(mouse.Hit.p)
+    end)]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
@@ -556,23 +570,35 @@ end)]]></ProtectedString>
 					<string name="ScriptGuid">{5E2D4FFA-68DD-4AAB-9380-15CB7DDF50FB}</string>
 					<ProtectedString name="Source"><![CDATA[math.randomseed(os.time())
 
-local PlayerManager = require(game.ReplicatedStorage.Source.PlayerManager)
-local RoadManager = require(game.ReplicatedStorage.Source.RoadManager)
+local Server = {
+    PlayerManager = require(game.ReplicatedStorage.Source.PlayerManager),
+    RoadManager = require(game.ReplicatedStorage.Source.RoadManager),
+    FireManager = require(game.ReplicatedStorage.Source.FireManager)
+}
 
-RoadManager:GenRoad()
-RoadManager:GenRoad()
+Server.PlayerManager:Init(Server)
+Server.RoadManager:Init(Server)
+Server.FireManager:Init(Server)
+
+Server.RoadManager:GenRoad()
+Server.RoadManager:GenRoad()
 
 game.ReplicatedStorage.Events.StartRunning.OnServerEvent:connect(
     function(player)
         print('On Start Running')
         wait(3)
 
-        PlayerManager:Run(player)
+        Server.PlayerManager:Run(player)
     end)
 
 game.ReplicatedStorage.Events.GenRoad.OnServerEvent:connect(
-    function()
-        RoadManager:GenRoad()
+    function(player)
+        Server.RoadManager:GenRoad()
+    end)
+
+game.ReplicatedStorage.Events.Fire.OnServerEvent:connect(
+    function(player, position)
+        Server.FireManager:Fire(position)
     end)]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
@@ -605,11 +631,16 @@ game.ReplicatedStorage.Events.GenRoad.OnServerEvent:connect(
 					<string name="Name">PlayerManager</string>
 					<string name="ScriptGuid">{90D3DDAE-0215-453F-B7E3-E79A63625A21}</string>
 					<ProtectedString name="Source"><![CDATA[local PlayerManager = {}
+PlayerManager.Player = nil
+
+function PlayerManager:Init(server)
+    self.server = server
+end
 
 function PlayerManager:Run(player)
-    _player = player
+    self.Player = player
 
-    game.ReplicatedStorage.Events.EnableControls:FireClient(player, true)
+    -- game.ReplicatedStorage.Events.EnableControls:FireClient(player, true)
     print('Enable Controls')
 end
 
@@ -634,6 +665,11 @@ RoadManager.roadIdx = 0
 RoadManager.roads = {}
 
 local ROAD_OFFSET = -512
+
+function RoadManager:Init(server)
+    self.server = server
+end
+
 
 function RoadManager:GenRoad()
     print('GenRoad')
@@ -662,6 +698,47 @@ return RoadManager]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
+			<Item class="ModuleScript" referent="RBXB7CD649433564A44A6D1579A9B96E09A">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">FireManager</string>
+					<string name="ScriptGuid">{BD51F0F7-432A-4CF9-A37F-035B4929B916}</string>
+					<ProtectedString name="Source"><![CDATA[local FireManager = {}
+FireManager.Bullet = game.ReplicatedStorage.Objects.IronBall
+
+local function createBullet(target)
+    local bullet = FireManager.Bullet:Clone()
+    bullet.Parent = workspace
+
+    local pos = FireManager.server.PlayerManager.Player.Character.Head.Position
+    pos = Vector3.new(pos.x, pos.y, pos.z - 2)
+    bullet.Position = pos
+
+    local direction = (target - pos).unit
+    bullet.Velocity = direction * 300
+
+    -- print('direction ', direction)
+
+	-- local v = Instance.new("BodyForce", bullet)
+    -- v.force = Vector3.new(direction.x * 3000, direction.y * 80000, direction.z * 3000)
+    -- v.Parent = bullet
+end
+
+function FireManager:Init(server)
+    self.server = server
+end
+
+function FireManager:Fire(pos)
+    spawn(function()
+        createBullet(pos)
+    end)
+end
+
+return FireManager]]></ProtectedString>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
 		</Item>
 		<Item class="Folder" referent="RBX2351C0DA2DD44816B2D84D56AA32CE27">
 			<Properties>
@@ -687,6 +764,13 @@ return RoadManager]]></ProtectedString>
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">GenRoad</string>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="RemoteEvent" referent="RBXCB9FFD82AA3F40A39B0FFB48E5E3BD00">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<string name="Name">Fire</string>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
@@ -1310,6 +1394,104 @@ return RoadManager]]></ProtectedString>
 							</Item>
 						</Item>
 					</Item>
+				</Item>
+			</Item>
+			<Item class="Part" referent="RBX0">
+				<Properties>
+					<bool name="Anchored">false</bool>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<float name="BackParamA">-0.5</float>
+					<float name="BackParamB">0.5</float>
+					<token name="BackSurface">0</token>
+					<token name="BackSurfaceInput">0</token>
+					<float name="BottomParamA">-0.5</float>
+					<float name="BottomParamB">0.5</float>
+					<token name="BottomSurface">0</token>
+					<token name="BottomSurfaceInput">0</token>
+					<CoordinateFrame name="CFrame">
+						<X>0</X>
+						<Y>0</Y>
+						<Z>0</Z>
+						<R00>0</R00>
+						<R01>-1</R01>
+						<R02>0</R02>
+						<R10>1</R10>
+						<R11>0</R11>
+						<R12>0</R12>
+						<R20>0</R20>
+						<R21>0</R21>
+						<R22>1</R22>
+					</CoordinateFrame>
+					<bool name="CanCollide">true</bool>
+					<bool name="CastShadow">true</bool>
+					<int name="CollisionGroupId">0</int>
+					<Color3uint8 name="Color3uint8">4284702562</Color3uint8>
+					<PhysicalProperties name="CustomPhysicalProperties">
+						<CustomPhysics>false</CustomPhysics>
+					</PhysicalProperties>
+					<float name="FrontParamA">-0.5</float>
+					<float name="FrontParamB">0.5</float>
+					<token name="FrontSurface">0</token>
+					<token name="FrontSurfaceInput">0</token>
+					<float name="LeftParamA">-0.5</float>
+					<float name="LeftParamB">0.5</float>
+					<token name="LeftSurface">0</token>
+					<token name="LeftSurfaceInput">0</token>
+					<bool name="Locked">false</bool>
+					<bool name="Massless">false</bool>
+					<token name="Material">256</token>
+					<string name="Name">IronBall</string>
+					<float name="Reflectance">0.400000006</float>
+					<float name="RightParamA">-0.5</float>
+					<float name="RightParamB">0.5</float>
+					<token name="RightSurface">0</token>
+					<token name="RightSurfaceInput">0</token>
+					<int name="RootPriority">0</int>
+					<Vector3 name="RotVelocity">
+						<X>0</X>
+						<Y>0</Y>
+						<Z>0</Z>
+					</Vector3>
+					<BinaryString name="Tags"></BinaryString>
+					<float name="TopParamA">-0.5</float>
+					<float name="TopParamB">0.5</float>
+					<token name="TopSurface">0</token>
+					<token name="TopSurfaceInput">0</token>
+					<float name="Transparency">0</float>
+					<Vector3 name="Velocity">
+						<X>0</X>
+						<Y>0</Y>
+						<Z>0</Z>
+					</Vector3>
+					<token name="formFactorRaw">0</token>
+					<token name="shape">0</token>
+					<Vector3 name="size">
+						<X>4</X>
+						<Y>4</Y>
+						<Z>4</Z>
+					</Vector3>
+				</Properties>
+				<Item class="Trail" referent="RBXEFEC4BA7FB2E40F2A2F901FF69CE9F99">
+					<Properties>
+						<Ref name="Attachment0">null</Ref>
+						<Ref name="Attachment1">null</Ref>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<ColorSequence name="Color">0 1 1 1 0 1 1 1 1 0 </ColorSequence>
+						<bool name="Enabled">true</bool>
+						<bool name="FaceCamera">false</bool>
+						<float name="Lifetime">2</float>
+						<float name="LightEmission">0</float>
+						<float name="LightInfluence">1</float>
+						<float name="MaxLength">0</float>
+						<float name="MinLength">0.100000001</float>
+						<string name="Name">Trail</string>
+						<BinaryString name="Tags"></BinaryString>
+						<Content name="Texture"><null></null></Content>
+						<float name="TextureLength">1</float>
+						<token name="TextureMode">0</token>
+						<NumberSequence name="Transparency">0 0.5 0 1 0.5 0 </NumberSequence>
+						<NumberSequence name="WidthScale">0 1 0 1 1 0 </NumberSequence>
+					</Properties>
 				</Item>
 			</Item>
 		</Item>
