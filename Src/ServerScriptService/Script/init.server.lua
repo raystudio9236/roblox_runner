@@ -1,5 +1,6 @@
 math.randomseed(os.time())
 local RunService = game:GetService("RunService")
+local PhysicsService = game:GetService("PhysicsService")
 local gameOverUI = game.ReplicatedStorage.Objects.GameOverGui
 
 game.Players.CharacterAutoLoads = false
@@ -81,5 +82,12 @@ game.ReplicatedStorage.Events.ServerOnly.GameOver.Event:connect(function()
 
     Server.PlayerManager:Clear()
 end)
+
+-- init physics
+PhysicsService:CreateCollisionGroup('Ball')
+PhysicsService:CreateCollisionGroup('Wall')
+PhysicsService:CollisionGroupSetCollidable('Ball', 'Ball', true)
+PhysicsService:CollisionGroupSetCollidable('Wall', 'Wall', true)
+PhysicsService:CollisionGroupSetCollidable('Ball', 'Wall', false)
 
 RunService.Heartbeat:Connect(MainLoop)

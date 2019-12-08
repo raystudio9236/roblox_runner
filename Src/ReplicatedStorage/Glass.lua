@@ -30,6 +30,10 @@ function Glass:Init(script)
             print('Hit Ball')
             BeHit(glass, 0.5)
             game.ReplicatedStorage.Events.ServerOnly.HitBall:Fire()
+
+            delay(1, function()
+                other:Destroy()
+            end)
         else
             for i, player in pairs(players:GetPlayers()) do
                 if other.Parent.Name == player.Name then

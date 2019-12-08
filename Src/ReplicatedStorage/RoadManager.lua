@@ -1,5 +1,7 @@
 local RoadManager = {}
 
+local PhysicsService = game:GetService("PhysicsService")
+
 local glassRoot = game.workspace.Glass
 
 RoadManager.objects = {
@@ -54,6 +56,9 @@ function RoadManager:GenRoad()
     print(r, g, b)
     newRoad.Model.Root.Color = Color3.new(r, g, b)
     table.insert(self.roads, newRoad)
+
+    PhysicsService:SetPartCollisionGroup(newRoad.Model.Root.LeftWall, 'Wall')
+    PhysicsService:SetPartCollisionGroup(newRoad.Model.Root.RightWall, 'Wall')
 
     local startPos = self.roadIdx * ROAD_OFFSET - ROAD_OFFSET / 2
 

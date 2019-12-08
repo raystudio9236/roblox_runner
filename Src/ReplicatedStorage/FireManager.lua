@@ -1,9 +1,11 @@
 local FireManager = {}
+local PhysicsService = game:GetService("PhysicsService")
 FireManager.Bullet = game.ReplicatedStorage.Objects.IronBall
 
 local function createBullet(target)
     local bullet = FireManager.Bullet:Clone()
     bullet.Parent = workspace
+    PhysicsService:SetPartCollisionGroup(bullet, 'Ball')
 
     local pos = FireManager.server.PlayerManager.player.Character.Head.Position
     pos = Vector3.new(pos.x, pos.y, pos.z - 3.5)
@@ -11,9 +13,10 @@ local function createBullet(target)
     bullet.Transparency = 1
 
     local direction = (target - pos).unit
-    bullet.Velocity = direction * 500
+    direction = Vector3.new(direction.x, direction.y * 2, direction.z)
+    bullet.Velocity = direction * 300
 
-    wait(0.1)
+    wait(0.15)
 
     bullet.Transparency = 0
 end
