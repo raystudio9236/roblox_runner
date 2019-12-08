@@ -24,6 +24,7 @@ local function MainLoop(dt)
     if not Server.gameRunning then return end
 
     Server.PlayerManager:Update(dt)
+    Server.FireManager:Update(dt)
 end
 
 game.ReplicatedStorage.Events.StartRunning.OnServerEvent:connect(

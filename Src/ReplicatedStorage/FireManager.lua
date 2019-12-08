@@ -21,7 +21,20 @@ end
 function FireManager:Init(server)
     self.server = server
     self.fireCd = server.PlayerConfig.FireCd
+    self.fireTimer = 0
     self.canFire = true
+end
+
+function FireManager:Update(dt)
+    if self.fireTimer > 0 then
+        self.fireTimer = self.fireTimer - dt
+
+        game.ReplicatedStorage.Events.ServerOnly.FireCdUpdate:Fire(self.fireTimer)
+
+        if self.fireTimer <= 0 then
+            self.canFire = true
+        end
+    end
 end
 
 function FireManager:Fire(pos)
@@ -29,9 +42,7 @@ function FireManager:Fire(pos)
         self.canFire = false
         createBullet(pos)
 
-        delay(self.fireCd, function()
-            self.canFire = true
-        end)
+        self.fireTimer = self.fireCd
     end
 end
 
