@@ -18,7 +18,6 @@ game.ReplicatedStorage.Events.EnableControls.OnClientEvent:connect(function(enab
 	controlsEnabled = enabled
 end)
 
-
 game:GetService('RunService'):BindToRenderStep(
     'Controls',
     Enum.RenderPriority.Character.Value,

@@ -5,7 +5,7 @@ local function createBullet(target)
     local bullet = FireManager.Bullet:Clone()
     bullet.Parent = workspace
 
-    local pos = FireManager.server.PlayerManager.Player.Character.Head.Position
+    local pos = FireManager.server.PlayerManager.player.Character.Head.Position
     pos = Vector3.new(pos.x, pos.y, pos.z - 3.5)
     bullet.Position = pos
     bullet.Transparency = 1

@@ -28,13 +28,15 @@ function Glass:Init(script)
         if other.Name == 'IronBall' then
             self.touched = true
             print('Hit Ball')
-            BeHit(glass, 1)
+            BeHit(glass, 0.5)
+            game.ReplicatedStorage.Events.ServerOnly.HitBall:Fire()
         else
             for i, player in pairs(players:GetPlayers()) do
                 if other.Parent.Name == player.Name then
                     self.touched = true
                     print('Hit Player')
                     BeHit(glass, 0.1)
+                    game.ReplicatedStorage.Events.ServerOnly.HitPlayer:Fire()
                 end
             end
         end

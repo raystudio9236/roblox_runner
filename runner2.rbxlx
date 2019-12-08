@@ -40,9 +40,9 @@
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<CoordinateFrame name="CFrame">
-					<X>-49.9312363</X>
-					<Y>115.159866</Y>
-					<Z>277.850769</Z>
+					<X>61.8144302</X>
+					<Y>406.606842</Y>
+					<Z>372.044281</Z>
 					<R00>0.897198081</R00>
 					<R01>-0.363957644</R01>
 					<R02>0.250140935</R02>
@@ -57,9 +57,9 @@
 				<token name="CameraType">4</token>
 				<float name="FieldOfView">45</float>
 				<CoordinateFrame name="Focus">
-					<X>-50.4315186</X>
-					<Y>113.511612</Y>
-					<Z>276.834412</Z>
+					<X>61.3141479</X>
+					<Y>404.958588</Y>
+					<Z>371.027924</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -318,7 +318,6 @@ game.ReplicatedStorage.Events.EnableControls.OnClientEvent:connect(function(enab
 	controlsEnabled = enabled
 end)
 
-
 game:GetService('RunService'):BindToRenderStep(
     'Controls',
     Enum.RenderPriority.Character.Value,
@@ -405,12 +404,19 @@ local humanoid = player.Character.Humanoid
 
 local touching
 
+local scoreTxt = player.PlayerGui.ScreenGui.ScoreDisplay.ScoreTxt
+
 humanoid.Touched:connect(function(other)
     if other.Name == 'GenPoint' and touching ~= other then
         touching = other
         game.ReplicatedStorage.Events.GenRoad:FireServer()
     end
-end)]]></ProtectedString>
+end)
+
+game.ReplicatedStorage.Events.UpdateScore.OnClientEvent:connect(
+    function(newScore)
+        scoreTxt.Text = string.format("Score %d", newScore)
+    end)]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
@@ -439,6 +445,231 @@ end)]]></ProtectedString>
 			<bool name="ShowDevelopmentGui">true</bool>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
+		<Item class="ScreenGui" referent="RBX183CA2E23D1F4F66BEED45DDA95B7E0F">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoLocalize">true</bool>
+				<int name="DisplayOrder">0</int>
+				<bool name="Enabled">true</bool>
+				<bool name="IgnoreGuiInset">false</bool>
+				<string name="Name">ScreenGui</string>
+				<bool name="ResetOnSpawn">true</bool>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<BinaryString name="Tags"></BinaryString>
+				<token name="ZIndexBehavior">1</token>
+			</Properties>
+			<Item class="Frame" referent="RBX96ABE4AA69034DB4BA89CA425762BE8C">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">ScoreDisplay</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0</XS>
+						<XO>0</XO>
+						<YS>0.899999976</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<UDim2 name="Size">
+						<XS>0.196991801</XS>
+						<XO>0</XO>
+						<YS>0.100000001</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="ImageLabel" referent="RBX4959EA05041843609D7598542677EEA8">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<Content name="Image"><url>rbxassetid://605740338</url></Content>
+						<Color3 name="ImageColor3">
+							<R>0.400000006</R>
+							<G>0.400000006</G>
+							<B>0.400000006</B>
+						</Color3>
+						<Vector2 name="ImageRectOffset">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<Vector2 name="ImageRectSize">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<float name="ImageTransparency">0</float>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Edging</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<token name="ScaleType">1</token>
+						<bool name="Selectable">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>216</XO>
+							<YS>0</YS>
+							<YO>49</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<Rect2D name="SliceCenter">
+							<min>
+								<X>24</X>
+								<Y>24</Y>
+							</min>
+							<max>
+								<X>216</X>
+								<Y>216</Y>
+							</max>
+						</Rect2D>
+						<float name="SliceScale">1</float>
+						<BinaryString name="Tags"></BinaryString>
+						<UDim2 name="TileSize">
+							<XS>1</XS>
+							<XO>0</XO>
+							<YS>1</YS>
+							<YO>0</YO>
+						</UDim2>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+				</Item>
+				<Item class="TextLabel" referent="RBXECF3C9FE2AA94441A8FF96E2B576EC70">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<token name="Font">3</token>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="Name">ScoreTxt</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>216</XO>
+							<YS>0</YS>
+							<YO>50</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Score 0</string>
+						<Color3 name="TextColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<bool name="TextScaled">false</bool>
+						<float name="TextSize">30</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">false</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+				</Item>
+			</Item>
+		</Item>
 	</Item>
 	<Item class="LocalizationService" referent="RBX798ABB62C2EC4EA5BC311832A4A99736">
 		<Properties>
@@ -569,6 +800,7 @@ end)]]></ProtectedString>
 					<string name="Name">Script</string>
 					<string name="ScriptGuid">{5E2D4FFA-68DD-4AAB-9380-15CB7DDF50FB}</string>
 					<ProtectedString name="Source"><![CDATA[math.randomseed(os.time())
+local RunService = game:GetService("RunService")
 
 local Server = {
     PlayerManager = require(game.ReplicatedStorage.Source.PlayerManager),
@@ -577,6 +809,8 @@ local Server = {
     PlayerConfig = require(game.ReplicatedStorage.Source.PlayerConfig),
 }
 
+Server.gameRunning = false
+
 Server.PlayerManager:Init(Server)
 Server.RoadManager:Init(Server)
 Server.FireManager:Init(Server)
@@ -584,8 +818,19 @@ Server.FireManager:Init(Server)
 Server.RoadManager:GenRoad()
 Server.RoadManager:GenRoad()
 
+
+local frame = 0
+
+local function MainLoop(dt)
+    if not Server.gameRunning then return end
+
+    Server.PlayerManager:Update(dt)
+end
+
 game.ReplicatedStorage.Events.StartRunning.OnServerEvent:connect(
     function(player)
+        Server.gameRunning = true
+
         print('On Start Running')
         wait(3)
 
@@ -600,7 +845,9 @@ game.ReplicatedStorage.Events.GenRoad.OnServerEvent:connect(
 game.ReplicatedStorage.Events.Fire.OnServerEvent:connect(
     function(player, position)
         Server.FireManager:Fire(position)
-    end)]]></ProtectedString>
+    end)
+
+RunService.Heartbeat:Connect(MainLoop)]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
@@ -632,17 +879,42 @@ game.ReplicatedStorage.Events.Fire.OnServerEvent:connect(
 					<string name="Name">PlayerManager</string>
 					<string name="ScriptGuid">{90D3DDAE-0215-453F-B7E3-E79A63625A21}</string>
 					<ProtectedString name="Source"><![CDATA[local PlayerManager = {}
-PlayerManager.Player = nil
 
 function PlayerManager:Init(server)
     self.server = server
+    self.playerScore = 0
+    self.playerDistance = 0
+
+    game.ReplicatedStorage.Events.ServerOnly.HitBall.Event:connect(function()
+        self.playerScore = self.playerScore + 200
+    end)
+
+    game.ReplicatedStorage.Events.ServerOnly.HitPlayer.Event:connect(function()
+        self.playerScore = math.max(0, self.playerScore - 3000)
+    end)
 end
 
 function PlayerManager:Run(player)
-    self.Player = player
+    self.player = player
+    self.playerStartPos = player.Character.HumanoidRootPart.Position
 
     game.ReplicatedStorage.Events.EnableControls:FireClient(player, true)
     print('Enable Controls')
+end
+
+function PlayerManager:Update(dt)
+    if not self.player then return end
+
+    self:_CalPlayerScore()
+end
+
+function PlayerManager:_CalPlayerScore()
+    local currentPos = self.player.Character.HumanoidRootPart.Position
+    self.playerDistance = math.abs(currentPos.Z - self.playerStartPos.Z)
+    self.playerScore = self.playerScore + self.playerDistance * 10
+    self.playerStartPos = currentPos
+
+    game.ReplicatedStorage.Events.UpdateScore:FireClient(self.player, self.playerScore)
 end
 
 return PlayerManager]]></ProtectedString>
@@ -747,7 +1019,7 @@ local function createBullet(target)
     local bullet = FireManager.Bullet:Clone()
     bullet.Parent = workspace
 
-    local pos = FireManager.server.PlayerManager.Player.Character.Head.Position
+    local pos = FireManager.server.PlayerManager.player.Character.Head.Position
     pos = Vector3.new(pos.x, pos.y, pos.z - 3.5)
     bullet.Position = pos
     bullet.Transparency = 1
@@ -811,9 +1083,11 @@ local function BeHit(glass, delayTime)
     glass.Anchored = false
     glass.Parent.Anchored = false
 
-    wait(delayTime)
+    glass.Color = Color3.new(166, 66, 92)
 
-    glass.Parent.Parent:Destroy()
+    delay(delayTime, function()
+        glass.Parent.Parent:Destroy()
+    end)
 end
 
 function Glass:new()
@@ -830,13 +1104,15 @@ function Glass:Init(script)
         if other.Name == 'IronBall' then
             self.touched = true
             print('Hit Ball')
-            BeHit(glass, 1.5)
+            BeHit(glass, 0.5)
+            game.ReplicatedStorage.Events.ServerOnly.HitBall:Fire()
         else
             for i, player in pairs(players:GetPlayers()) do
                 if other.Parent.Name == player.Name then
                     self.touched = true
                     print('Hit Player')
-                    BeHit(glass, 0.2)
+                    BeHit(glass, 0.1)
+                    game.ReplicatedStorage.Events.ServerOnly.HitPlayer:Fire()
                 end
             end
         end
@@ -875,7 +1151,7 @@ glass:Init(script)]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">classic</string>
-						<string name="ScriptGuid"></string>
+						<string name="ScriptGuid">{62019BBF-6E60-4E9E-908A-16638F9FC58B}</string>
 						<ProtectedString name="Source"><![CDATA[--
 -- classic
 --
@@ -982,6 +1258,41 @@ return Object]]></ProtectedString>
 					<string name="Name">Fire</string>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
+			</Item>
+			<Item class="RemoteEvent" referent="RBX5689AE14AE314D9599551007C0E7EE3A">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<string name="Name">UpdateScore</string>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="Folder" referent="RBXAB06D5C98585489E8F006E805FBDF1A1">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<string name="Name">ServerOnly</string>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+				<Item class="BindableEvent" referent="RBXAF826951FDCA4530A0AE8497C811390B">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="Name">HitPlayer</string>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+				<Item class="BindableEvent" referent="RBXE3C99DC9F6D24F8EA7B9BF4C20DB32CC">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="Name">HitBall</string>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+				<Item class="BindableEvent" referent="RBX28BCE02721F2472A8EAB1975D695344E">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="Name">GameOver</string>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
 			</Item>
 		</Item>
 		<Item class="Folder" referent="RBX3F5E357B304F47C6A6D0ADC0263C5385">
