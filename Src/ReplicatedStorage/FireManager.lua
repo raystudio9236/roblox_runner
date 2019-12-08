@@ -37,12 +37,20 @@ function FireManager:Update(dt)
     end
 end
 
+function FireManager:Clear()
+    self.canFire = true
+    self.fireTimer = 0
+end
+
 function FireManager:Fire(pos)
+    if not self.server.gameRunning then return end
+
     if self.canFire then
         self.canFire = false
         createBullet(pos)
 
         self.fireTimer = self.fireCd
+        print('cd ' .. self.fireTimer)
     end
 end
 

@@ -1,4 +1,9 @@
 local player = game.Players.LocalPlayer
+
+print('Player Start Running')
+
+game.ReplicatedStorage.Events.StartRunning:FireServer()
+
 repeat
     wait()
 until player.Character
@@ -6,8 +11,6 @@ until player.Character
 local humanoid = player.Character.Humanoid
 
 local touching
-
-local scoreTxt = player.PlayerGui.ScreenGui.ScoreDisplay.ScoreTxt
 
 humanoid.Touched:connect(function(other)
     if other.Name == 'GenPoint' and touching ~= other then
@@ -18,5 +21,5 @@ end)
 
 game.ReplicatedStorage.Events.UpdateScore.OnClientEvent:connect(
     function(newScore)
-        scoreTxt.Text = string.format("Score %d", newScore)
+        player.PlayerGui.ScreenGui.ScoreDisplay.ScoreTxt.Text = string.format("Score %d", newScore)
     end)

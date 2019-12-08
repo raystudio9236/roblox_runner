@@ -1,5 +1,7 @@
 local RoadManager = {}
 
+local glassRoot = game.workspace.Glass
+
 RoadManager.objects = {
     Road1 = game.ReplicatedStorage.Objects.Road1,
     Road2 = game.ReplicatedStorage.Objects.Road2,
@@ -20,6 +22,18 @@ function RoadManager:Init(server)
     self.server = server
 end
 
+function RoadManager:Clear()
+    self.roadIdx = 0
+    for _, road in ipairs(self.roads) do
+        road:Destroy()
+    end
+    self.roads = {}
+
+    local glasses = glassRoot:GetChildren()
+    for _, glass in ipairs(glasses) do
+        glass:Destroy()
+    end
+end
 
 function RoadManager:GenRoad()
     print('GenRoad')
@@ -58,7 +72,7 @@ function RoadManager:GenRoad()
             end
 
             local glass = obj:Clone()
-            glass.Parent = workspace
+            glass.Parent = glassRoot
             glass:SetPrimaryPartCFrame(CFrame.new(0, 10.5, startPos + i * OB_INTERVAL))
         end
     end

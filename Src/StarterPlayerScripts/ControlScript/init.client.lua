@@ -40,10 +40,6 @@ game:GetService('RunService'):BindToRenderStep(
         end
     end)
 
-print('Player Start Running')
-
-game.ReplicatedStorage.Events.StartRunning:FireServer()
-
 local ContextActionService = game:GetService("ContextActionService")
 -- Jump Key
 ContextActionService:BindAction('Jump',

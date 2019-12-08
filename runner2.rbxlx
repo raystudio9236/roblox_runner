@@ -40,9 +40,9 @@
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<CoordinateFrame name="CFrame">
-					<X>-4.36489964</X>
-					<Y>132.368698</Y>
-					<Z>381.228485</Z>
+					<X>4.82625198</X>
+					<Y>154.328674</Y>
+					<Z>452.343445</Z>
 					<R00>0.999753296</R00>
 					<R01>-0.00879787281</R01>
 					<R02>0.0203990545</R02>
@@ -57,9 +57,9 @@
 				<token name="CameraType">4</token>
 				<float name="FieldOfView">45</float>
 				<CoordinateFrame name="Focus">
-					<X>-4.40569782</X>
-					<Y>131.576645</Y>
-					<Z>379.392456</Z>
+					<X>4.7854538</X>
+					<Y>153.536621</Y>
+					<Z>450.507416</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -162,6 +162,13 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 					<Y>252</Y>
 					<Z>2044</Z>
 				</Vector3>
+			</Properties>
+		</Item>
+		<Item class="Folder" referent="RBXEB738AAF9792470F9BF5F9C9D65A4AA5">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Glass</string>
+				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
 	</Item>
@@ -895,6 +902,13 @@ function PlayerManager:Init(server)
 
     game.ReplicatedStorage.Events.ServerOnly.HitPlayer.Event:connect(function()
         self.playerScore = math.max(0, self.playerScore - 3000)
+
+        self.life = self.life - 1
+        self.lifeTxt.Text = string.format("Life: %d", self.life)
+
+        if self.life <= 0 then
+            print('Game Over')
+        end
     end)
 
     game.ReplicatedStorage.Events.ServerOnly.FireCdUpdate.Event:connect(function(timer)
@@ -916,7 +930,8 @@ function PlayerManager:Run(player)
     self.cdTxt = cd.CDTxt
     self.lifeTxt = life.LifeTxt
 
-    self.lifeTxt.Text = string.format("Life: %d", self.server.PlayerConfig.DefaultLife)
+    self.life = self.server.PlayerConfig.DefaultLife
+    self.lifeTxt.Text = string.format("Life: %d", self.life)
     self.cdTxt.Text = 'Ready Fire'
 
     cd.Parent = game.workspace[player.Name].Head
@@ -930,6 +945,15 @@ function PlayerManager:Update(dt)
     if not self.player then return end
 
     self:_CalPlayerScore()
+end
+
+function PlayerManager:Clear()
+    self.playerScore = 0
+    self.playerDistance = 0
+    self.cdTxt.Parent:Destroy()
+    self.lifeTxt.Parent:Destroy()
+    self.playerStartPos = nil
+    self.player = nil
 end
 
 function PlayerManager:_CalPlayerScore()
@@ -973,6 +997,15 @@ function RoadManager:Init(server)
     self.server = server
 end
 
+function RoadManager:Clear()
+    self.roadIdx = 0
+    for _, road in ipairs(self.roads) do
+        road:Destroy()
+    end
+    self.roads = {}
+
+    
+end
 
 function RoadManager:GenRoad()
     print('GenRoad')
@@ -1073,6 +1106,11 @@ function FireManager:Update(dt)
             self.canFire = true
         end
     end
+end
+
+function FireManager:Clear()
+    self.canFire = false
+    self.fireTimer = 0
 end
 
 function FireManager:Fire(pos)
@@ -3401,6 +3439,223 @@ glass:Init(script)]]></ProtectedString>
 								</Vector3>
 							</Properties>
 						</Item>
+					</Item>
+				</Item>
+			</Item>
+			<Item class="ScreenGui" referent="RBX5594DBA97BED40D39DF498A07B17E334">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<int name="DisplayOrder">0</int>
+					<bool name="Enabled">true</bool>
+					<bool name="IgnoreGuiInset">false</bool>
+					<string name="Name">GameOverGui</string>
+					<bool name="ResetOnSpawn">true</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<BinaryString name="Tags"></BinaryString>
+					<token name="ZIndexBehavior">1</token>
+				</Properties>
+				<Item class="Frame" referent="RBXFD3D01CA885841DC9F5E2E54DE0FF0EA">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">0.5</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Frame</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0.24430266</XS>
+							<XO>0</XO>
+							<YS>0.168986052</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<UDim2 name="Size">
+							<XS>0.510582447</XS>
+							<XO>0</XO>
+							<YS>0.660636246</YS>
+							<YO>0</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="TextLabel" referent="RBX3414ED9CAE2A47E59ADC05EAAB91A1C8">
+						<Properties>
+							<bool name="Active">false</bool>
+							<Vector2 name="AnchorPoint">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<bool name="AutoLocalize">true</bool>
+							<Color3 name="BackgroundColor3">
+								<R>1</R>
+								<G>1</G>
+								<B>1</B>
+							</Color3>
+							<float name="BackgroundTransparency">1</float>
+							<Color3 name="BorderColor3">
+								<R>0.105882362</R>
+								<G>0.164705887</G>
+								<B>0.207843155</B>
+							</Color3>
+							<token name="BorderMode">0</token>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<bool name="Draggable">false</bool>
+							<token name="Font">3</token>
+							<int name="LayoutOrder">0</int>
+							<float name="LineHeight">1</float>
+							<string name="Name">BestScoreTxt</string>
+							<Ref name="NextSelectionDown">null</Ref>
+							<Ref name="NextSelectionLeft">null</Ref>
+							<Ref name="NextSelectionRight">null</Ref>
+							<Ref name="NextSelectionUp">null</Ref>
+							<UDim2 name="Position">
+								<XS>0.237453759</XS>
+								<XO>0</XO>
+								<YS>0.228708982</YS>
+								<YO>0</YO>
+							</UDim2>
+							<Ref name="RootLocalizationTable">null</Ref>
+							<float name="Rotation">0</float>
+							<bool name="Selectable">false</bool>
+							<Ref name="SelectionImageObject">null</Ref>
+							<UDim2 name="Size">
+								<XS>0</XS>
+								<XO>294</XO>
+								<YS>0</YS>
+								<YO>50</YO>
+							</UDim2>
+							<token name="SizeConstraint">0</token>
+							<BinaryString name="Tags"></BinaryString>
+							<string name="Text">Best Score: 0</string>
+							<Color3 name="TextColor3">
+								<R>0</R>
+								<G>0</G>
+								<B>0</B>
+							</Color3>
+							<bool name="TextScaled">false</bool>
+							<float name="TextSize">30</float>
+							<Color3 name="TextStrokeColor3">
+								<R>0</R>
+								<G>0</G>
+								<B>0</B>
+							</Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextTruncate">0</token>
+							<bool name="TextWrapped">false</bool>
+							<token name="TextXAlignment">2</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+					</Item>
+					<Item class="TextButton" referent="RBX97E1EFF19A32480E845E0A949220C3AE">
+						<Properties>
+							<bool name="Active">true</bool>
+							<Vector2 name="AnchorPoint">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<bool name="AutoButtonColor">true</bool>
+							<bool name="AutoLocalize">true</bool>
+							<Color3 name="BackgroundColor3">
+								<R>1</R>
+								<G>1</G>
+								<B>1</B>
+							</Color3>
+							<float name="BackgroundTransparency">0</float>
+							<Color3 name="BorderColor3">
+								<R>0.105882362</R>
+								<G>0.164705887</G>
+								<B>0.207843155</B>
+							</Color3>
+							<token name="BorderMode">0</token>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<bool name="Draggable">false</bool>
+							<token name="Font">3</token>
+							<int name="LayoutOrder">0</int>
+							<float name="LineHeight">1</float>
+							<bool name="Modal">false</bool>
+							<string name="Name">TextButton</string>
+							<Ref name="NextSelectionDown">null</Ref>
+							<Ref name="NextSelectionLeft">null</Ref>
+							<Ref name="NextSelectionRight">null</Ref>
+							<Ref name="NextSelectionUp">null</Ref>
+							<UDim2 name="Position">
+								<XS>0.321366042</XS>
+								<XO>0</XO>
+								<YS>0.574781775</YS>
+								<YO>0</YO>
+							</UDim2>
+							<Ref name="RootLocalizationTable">null</Ref>
+							<float name="Rotation">0</float>
+							<bool name="Selectable">true</bool>
+							<bool name="Selected">false</bool>
+							<Ref name="SelectionImageObject">null</Ref>
+							<UDim2 name="Size">
+								<XS>0</XS>
+								<XO>200</XO>
+								<YS>0</YS>
+								<YO>50</YO>
+							</UDim2>
+							<token name="SizeConstraint">0</token>
+							<token name="Style">0</token>
+							<BinaryString name="Tags"></BinaryString>
+							<string name="Text">Restart</string>
+							<Color3 name="TextColor3">
+								<R>0</R>
+								<G>0</G>
+								<B>0</B>
+							</Color3>
+							<bool name="TextScaled">false</bool>
+							<float name="TextSize">30</float>
+							<Color3 name="TextStrokeColor3">
+								<R>0</R>
+								<G>0</G>
+								<B>0</B>
+							</Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextTruncate">0</token>
+							<bool name="TextWrapped">false</bool>
+							<token name="TextXAlignment">2</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
 					</Item>
 				</Item>
 			</Item>

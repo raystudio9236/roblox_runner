@@ -14,6 +14,14 @@ function PlayerManager:Init(server)
 
     game.ReplicatedStorage.Events.ServerOnly.HitPlayer.Event:connect(function()
         self.playerScore = math.max(0, self.playerScore - 3000)
+
+        self.life = self.life - 1
+        self.lifeTxt.Text = string.format("Life: %d", self.life)
+
+        if self.life <= 0 then
+            game.ReplicatedStorage.Events.ServerOnly.GameOver:Fire()
+            print('Game Over')
+        end
     end)
 
     game.ReplicatedStorage.Events.ServerOnly.FireCdUpdate.Event:connect(function(timer)
@@ -27,28 +35,40 @@ end
 
 function PlayerManager:Run(player)
     self.player = player
-    self.playerStartPos = player.Character.HumanoidRootPart.Position
 
-    local cd = cdBillBoard:Clone()
-    local life = lifeBillBoard:Clone()
+    self.characterAdded = player.CharacterAdded:connect(function(character)
+        self.playerStartPos = character.HumanoidRootPart.Position
 
-    self.cdTxt = cd.CDTxt
-    self.lifeTxt = life.LifeTxt
+        local cd = cdBillBoard:Clone()
+        local life = lifeBillBoard:Clone()
 
-    self.lifeTxt.Text = string.format("Life: %d", self.server.PlayerConfig.DefaultLife)
-    self.cdTxt.Text = 'Ready Fire'
+        self.cdTxt = cd.CDTxt
+        self.lifeTxt = life.LifeTxt
 
-    cd.Parent = game.workspace[player.Name].Head
-    life.Parent = game.workspace[player.Name].Head
+        self.life = self.server.PlayerConfig.DefaultLife
+        self.lifeTxt.Text = string.format("Life: %d", self.life)
+        self.cdTxt.Text = 'Ready Fire'
 
-    game.ReplicatedStorage.Events.EnableControls:FireClient(player, true)
-    print('Enable Controls')
+        cd.Parent = character.Head
+        life.Parent = character.Head
+
+        game.ReplicatedStorage.Events.EnableControls:FireClient(player, true)
+        print('Enable Controls')
+    end)
 end
 
 function PlayerManager:Update(dt)
     if not self.player then return end
 
     self:_CalPlayerScore()
+end
+
+function PlayerManager:Clear()
+    self.playerScore = 0
+    self.playerDistance = 0
+    self.playerStartPos = nil
+
+    self.characterAdded:disconnect()
 end
 
 function PlayerManager:_CalPlayerScore()

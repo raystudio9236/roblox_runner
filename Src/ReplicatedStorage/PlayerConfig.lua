@@ -1,6 +1,6 @@
 local config = {
     DefaultBulletCnt = 10,
-    DefaultLife = 5,
+    DefaultLife = 1,
     FireCd = 2,
 }
 
