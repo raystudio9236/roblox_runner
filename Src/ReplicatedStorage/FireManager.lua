@@ -8,7 +8,7 @@ local function createBullet(target)
     PhysicsService:SetPartCollisionGroup(bullet, 'Ball')
 
     local pos = FireManager.server.PlayerManager.player.Character.Head.Position
-    pos = Vector3.new(pos.x, pos.y, pos.z - 3.5)
+    pos = Vector3.new(pos.x, pos.y, pos.z - 1.5)
     bullet.Position = pos
     bullet.Transparency = 1
 

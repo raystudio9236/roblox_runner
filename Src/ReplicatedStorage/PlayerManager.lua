@@ -7,6 +7,8 @@ function PlayerManager:Init(server)
     self.server = server
     self.playerScore = 0
     self.playerDistance = 0
+    self.playerSpeed = 0
+    self.playerSpeedTimer = 0
 
     game.ReplicatedStorage.Events.ServerOnly.HitBall.Event:connect(function()
         self.playerScore = self.playerScore + 200
@@ -39,6 +41,8 @@ function PlayerManager:Run(player)
     self.characterAdded = player.CharacterAdded:connect(function(character)
         self.playerStartPos = character.HumanoidRootPart.Position
 
+        self.playerSpeed = player.Character.Humanoid.WalkSpeed
+
         local cd = cdBillBoard:Clone()
         local life = lifeBillBoard:Clone()
 
@@ -61,12 +65,15 @@ function PlayerManager:Update(dt)
     if not self.player then return end
 
     self:_CalPlayerScore()
+    self:_updatePlayerSpeed(dt)
 end
 
 function PlayerManager:Clear()
     self.playerScore = 0
     self.playerDistance = 0
     self.playerStartPos = nil
+    self.playerSpeedTimer = 0
+    self.playerSpeed = 0
 
     self.characterAdded:disconnect()
 end
@@ -78,6 +85,15 @@ function PlayerManager:_CalPlayerScore()
     self.playerStartPos = currentPos
 
     game.ReplicatedStorage.Events.UpdateScore:FireClient(self.player, self.playerScore)
+end
+
+function PlayerManager:_updatePlayerSpeed(dt)
+    self.playerSpeedTimer = self.playerSpeedTimer + dt
+    if self.playerSpeedTimer >= 1 then
+        self.playerSpeedTimer = 0
+        self.playerSpeed = self.playerSpeed + self.server.PlayerConfig.PlayerSpeedChanged
+        self.player.Character.Humanoid.WalkSpeed = self.playerSpeed
+    end
 end
 
 return PlayerManager
